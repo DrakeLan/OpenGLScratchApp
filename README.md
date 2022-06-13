@@ -2,8 +2,8 @@
 
 It's my personal OpenGL practice project, the feature will keep updating.
 
-Model Importing & Texture Mapping
+Model Importing & Texture Mapping/n
 ![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/Model%20Importing%20and%20Texture%20Mapping.gif)
 
-Multiple Types of Lights & Shadow Mapping
+Multiple Types of Lights & Shadow Mapping/n
 ![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/Mupltiple%20Lights.gif)
