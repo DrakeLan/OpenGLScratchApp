@@ -10,3 +10,6 @@ Model Importing & Texture Mapping
 Multiple Types of Lights & Shadow Mapping
 
 ![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/Mupltiple%20Lights.gif)
+
+
+More feature is working in progress...
