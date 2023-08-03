@@ -9,12 +9,17 @@ class Textrue
 public:
 	Textrue();
 	Textrue(const char* fileloc);
+	Textrue(const char* filelocs[]);
 
 	bool LoadTextrue();
 	bool LoadTextrueAlpha();
+	bool LoadCubeMap();
 
 	void UseTextrue();
+	void UseCubeMap();
 	void ClearTextrue();
+
+	GLuint getTextrueID();
 
 	~Textrue();
 
@@ -23,5 +28,6 @@ private:
 	int width, height, bitDepth;
 
 	const char* fileLocation;
+	const char* cubeMapCollection[6];
 };
 

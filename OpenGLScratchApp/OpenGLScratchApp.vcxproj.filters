@@ -89,5 +89,8 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{f6c0256d-3cc1-4e13-87de-7451537a0e2a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="NewFilter1">
+      <UniqueIdentifier>{ba399d70-ac6a-48a3-97e0-db27f7cc7ddf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

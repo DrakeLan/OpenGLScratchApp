@@ -37,6 +37,7 @@ Window mainWindow;
 std::vector<Mesh*> meshList;
 std::vector<Shader> shaderList;
 Shader directionalShadowShader;
+Shader envMapShader;
 
 Camera camera;
 
@@ -44,6 +45,7 @@ Textrue brickTextrue;
 Textrue dirtTextrue;
 Textrue PlainTextrue;
 Textrue grassTextrue;
+Textrue CubeMap;
 
 
 Material shinyMaterial;
@@ -152,6 +154,27 @@ void CreateObjects()
 
 }
 
+void createEnvPlane()
+{
+	unsigned int clipIndcies[]=
+	{
+		0, 2, 1,
+		2, 3, 1
+	};
+
+	GLfloat clipVertices[] = 
+	{
+		-1.0f, 1.0f, 0.999f,  0.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+		1.0, 1.0, 0.999,      1.0f, 1.0f,  0.0f, 0.0f, 1.0f,
+		-1.0, -1.0, 0.999,    0.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+		1.0, -1.0, 0.999,     1.0f, 0.0f,  0.0f, 0.0f, 1.0f,
+	};
+
+	Mesh *clipObj = new Mesh();
+	clipObj->CreateMesh(clipVertices, clipIndcies, 32, 6);
+	meshList.push_back(clipObj);
+}
+
 
 
 void CreateShaders()
@@ -162,6 +185,9 @@ void CreateShaders()
 
 	directionalShadowShader = Shader();
 	directionalShadowShader.CreateFromFiles("Shaders/directional_shadow_map.vert", "Shaders/directional_shadow_map.frag");
+
+	envMapShader = Shader();
+	envMapShader.CreateFromFiles("Shaders/enviroment_map.vert", "Shaders/enviroment_map.frag");
 
 }
 
@@ -220,6 +246,19 @@ void RenderScene()
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	ThirdOne.RenderModel();
+
+}
+
+void EnvMapPass(glm::mat3 P2WMat, glm::vec3 viewpos)
+{
+	envMapShader.UseShader();
+	envMapShader.SetPtoWTransform(&P2WMat);
+	envMapShader.SetViewPostion(&viewpos);
+	glActiveTexture(GL_TEXTURE0);
+	GLuint t_ID = CubeMap.getTextrueID();
+	glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMap.getTextrueID());
+
+	meshList[3]->RenderMesh();
 
 }
 
@@ -284,6 +323,7 @@ int main()
 
 
 	CreateObjects();
+	createEnvPlane();
 	CreateShaders();
 
 	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.5f);
@@ -296,6 +336,9 @@ int main()
 	PlainTextrue.LoadTextrueAlpha();
 	grassTextrue = Textrue((char*)("Textures/GrassTilling.png"));
 	grassTextrue.LoadTextrueAlpha();
+	const char* cubeMapPath[6] = { "Textures/posx.jpg", "Textures/negx.jpg", "Textures/posy.jpg", "Textures/negy.jpg", "Textures/posz.jpg", "Textures/negz.jpg" };
+	CubeMap = Textrue(cubeMapPath);
+	CubeMap.LoadCubeMap();
 
 	shinyMaterial = Material(1.0f, 32.0f);
 	dullMaterial = Material(0.0f, 0.0f);
@@ -347,6 +390,9 @@ int main()
 
 	glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 100.0f);
 
+	glm::mat4 inversPro = glm::inverse(projection);
+
+	glm::mat3 PtoWMat = glm::mat3(inversPro);
 
 	//loop until window close
 	while (!mainWindow.getShouldClose())
@@ -360,9 +406,11 @@ int main()
 
 		camera.KeyControl(mainWindow.getsKeys(), deltaTime);
 		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
-
+		
 		DirectinalShadowMapPass(&mainLight);
 		RenderPass(projection, camera.calculateViewMatrix());
+		PtoWMat = glm::mat3(glm::inverse(camera.calculateViewMatrix())) * glm::mat3(inversPro);
+		EnvMapPass(PtoWMat, camera.getCamPostion());
 
 
 		glUseProgram(0);

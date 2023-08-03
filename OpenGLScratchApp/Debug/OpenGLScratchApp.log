@@ -1,0 +1,6 @@
+﻿  OpenGLScratchApp.cpp
+g:\personal\visualstudio\openglproject\openglscratchapp\openglscratchapp\window.h(16): warning C4244: 'return': conversion from 'GLint' to 'GLfloat', possible loss of data
+g:\personal\visualstudio\openglproject\openglscratchapp\openglscratchapp\window.h(17): warning C4244: 'return': conversion from 'GLint' to 'GLfloat', possible loss of data
+g:\personal\visualstudio\openglproject\openglscratchapp\openglscratchapp\openglscratchapp.cpp(171): warning C4305: 'initializing': truncation from 'double' to 'GLfloat'
+g:\personal\visualstudio\openglproject\openglscratchapp\openglscratchapp\openglscratchapp.cpp(400): warning C4244: 'initializing': conversion from 'double' to 'GLfloat', possible loss of data
+  OpenGLScratchApp.vcxproj -> G:\Personal\VisualStudio\OpenGLProject\OpenGLScratchApp\Debug\OpenGLScratchApp.exe

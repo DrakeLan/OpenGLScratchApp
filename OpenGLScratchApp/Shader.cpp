@@ -95,6 +95,9 @@ void Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 
 	uniformPointLightCount = glGetUniformLocation(shaderID, "pointLightCount");
 
+	uniformPtoWTransform = glGetUniformLocation(shaderID, "PToWTransform");
+
+
 	for (size_t i = 0; i < MAX_POINT_LIGHTS; i++)
 	{
 		char locBuff[100] = { '\0' };
@@ -261,6 +264,16 @@ void Shader::SetDirectionalShadowMap(GLuint textureUnit)
 void Shader::SetDirectionalLightTransform(glm::mat4* lTransform)
 {
 	glUniformMatrix4fv(uniformDirectionalLightTransform, 1, GL_FALSE, glm::value_ptr(*lTransform));
+}
+
+void Shader::SetPtoWTransform(glm::mat3* p2wTransform)
+{
+	glUniformMatrix3fv(uniformPtoWTransform, 1, GL_FALSE, glm::value_ptr(*p2wTransform));
+}
+
+void Shader::SetViewPostion(glm::vec3* viewPos)
+{
+	glUniform3fv(uniformViewPosition, 1, glm::value_ptr(*viewPos));
 }
 
 
