@@ -154,6 +154,81 @@ void CreateObjects()
 
 }
 
+void createSkyBox()
+{
+	unsigned int cubeIndices[] =
+	{
+		//Top
+	  0, 1, 2,
+	  2, 3, 1,
+
+	  //Bottom
+	  4, 5, 6,
+	  6, 7, 5,
+
+	  //Front
+	  8, 9, 10,
+	  10, 11, 9,
+
+	  //Back
+	  12, 13, 14,
+	  14, 15, 13,
+
+	  //Left
+	  16, 17, 18,
+	  18, 19, 17,
+
+	  //Right
+	  20, 21, 22,
+	  22, 23, 21
+
+	};
+
+	GLfloat cubeVertices[] =
+	{
+		//Top
+	   -1, 1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//0
+		1, 1, -1 , 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//1
+	   - 1, 1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//2
+		1, 1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//3
+
+		//Bottom
+		-1, -1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//4
+		 1, -1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//5
+		-1, -1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//6
+		 1, -1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//7
+
+		//Front
+		- 1,  1, 1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//8
+		 1,  1, 1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//9
+		-1, -1, 1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//10
+		 1, -1, 1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//11
+
+		//Back
+		-1,  1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//12
+		 1,  1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//13
+		-1, -1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//14
+		 1, -1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//15
+
+		//Left
+		-1,  1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//16
+		-1,  1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//17
+		-1, -1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//18
+		-1, -1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//19
+
+		//Right
+		1,  1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//20
+		1,  1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//21
+		1, -1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//22
+		1, -1, -1,  0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//23
+	};
+
+	Mesh* skyBox = new Mesh();
+	skyBox->CreateMesh(cubeVertices, cubeIndices, 192, 36);
+	meshList.push_back(skyBox);
+
+}
+
 void createEnvPlane()
 {
 	unsigned int clipIndcies[]=
@@ -249,11 +324,13 @@ void RenderScene()
 
 }
 
-void EnvMapPass(glm::mat3 P2WMat, glm::vec3 viewpos)
+void EnvMapPass(glm::mat4 P2WMat, glm::vec3 viewpos)
 {
+	glm::mat4 model(1.0f);
 	envMapShader.UseShader();
 	envMapShader.SetPtoWTransform(&P2WMat);
 	envMapShader.SetViewPostion(&viewpos);
+
 	glActiveTexture(GL_TEXTURE0);
 	GLuint t_ID = CubeMap.getTextrueID();
 	glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMap.getTextrueID());
@@ -394,7 +471,7 @@ int main()
 
 	glm::mat4 inversPro = glm::inverse(projection);
 
-	glm::mat3 PtoWMat = glm::mat3(inversPro);
+	glm::mat4 PtoWMat = glm::mat4(inversPro);
 
 	//loop until window close
 	while (!mainWindow.getShouldClose())
@@ -409,11 +486,13 @@ int main()
 		camera.KeyControl(mainWindow.getsKeys(), deltaTime);
 		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 		
+
 		DirectinalShadowMapPass(&mainLight);
 		RenderPass(projection, camera.calculateViewMatrix());
-		PtoWMat = glm::mat3(glm::inverse(camera.calculateViewMatrix())) * glm::mat3(inversPro);
-		EnvMapPass(PtoWMat, camera.getCamPostion());
 
+		PtoWMat = glm::mat4(glm::inverse(camera.calculateViewMatrix())) * glm::mat4(inversPro);
+		
+		EnvMapPass(PtoWMat, camera.getCamPostion());
 
 		glUseProgram(0);
 

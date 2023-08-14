@@ -266,9 +266,9 @@ void Shader::SetDirectionalLightTransform(glm::mat4* lTransform)
 	glUniformMatrix4fv(uniformDirectionalLightTransform, 1, GL_FALSE, glm::value_ptr(*lTransform));
 }
 
-void Shader::SetPtoWTransform(glm::mat3* p2wTransform)
+void Shader::SetPtoWTransform(glm::mat4* p2wTransform)
 {
-	glUniformMatrix3fv(uniformPtoWTransform, 1, GL_FALSE, glm::value_ptr(*p2wTransform));
+	glUniformMatrix4fv(uniformPtoWTransform, 1, GL_FALSE, glm::value_ptr(*p2wTransform));
 }
 
 void Shader::SetViewPostion(glm::vec3* viewPos)

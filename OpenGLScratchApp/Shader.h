@@ -42,7 +42,7 @@ public:
 	void SetTexture(GLuint textureUnit);
 	void SetDirectionalShadowMap(GLuint textureUnit);
 	void SetDirectionalLightTransform(glm::mat4* lTransform);
-	void SetPtoWTransform(glm::mat3* p2wTransform);
+	void SetPtoWTransform(glm::mat4* p2wTransform);
 	void SetViewPostion(glm::vec3* viewPos);
 
 	void UseShader();
