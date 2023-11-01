@@ -31,13 +31,17 @@ const float toRadians = 3.14159265f / 180.0f;
 
 
 GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformViewPos = 0,
-uniformSpecularIntensity = 0, uniformShininess = 0;
+uniformSpecularIntensity = 0, uniformShininess = 0, uniformOmniLightPos = 0, uniformOmniFarPlane = 0;
 
 Window mainWindow;
 std::vector<Mesh*> meshList;
 std::vector<Shader> shaderList;
 Shader directionalShadowShader;
+Shader omniShadowShader;
 Shader envMapShader;
+Shader reflectionShader;
+Shader distortionShader;
+
 
 Camera camera;
 
@@ -55,6 +59,7 @@ Material PlainMaterial;
 Model xwing;
 Model blackhawk;
 Model ThirdOne;
+Model TeaPot;
 
 DirectionalLight mainLight;
 PointLight pointLights[MAX_POINT_LIGHTS];
@@ -154,80 +159,7 @@ void CreateObjects()
 
 }
 
-void createSkyBox()
-{
-	unsigned int cubeIndices[] =
-	{
-		//Top
-	  0, 1, 2,
-	  2, 3, 1,
 
-	  //Bottom
-	  4, 5, 6,
-	  6, 7, 5,
-
-	  //Front
-	  8, 9, 10,
-	  10, 11, 9,
-
-	  //Back
-	  12, 13, 14,
-	  14, 15, 13,
-
-	  //Left
-	  16, 17, 18,
-	  18, 19, 17,
-
-	  //Right
-	  20, 21, 22,
-	  22, 23, 21
-
-	};
-
-	GLfloat cubeVertices[] =
-	{
-		//Top
-	   -1, 1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//0
-		1, 1, -1 , 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//1
-	   - 1, 1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//2
-		1, 1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//3
-
-		//Bottom
-		-1, -1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//4
-		 1, -1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//5
-		-1, -1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//6
-		 1, -1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//7
-
-		//Front
-		- 1,  1, 1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//8
-		 1,  1, 1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//9
-		-1, -1, 1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//10
-		 1, -1, 1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//11
-
-		//Back
-		-1,  1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//12
-		 1,  1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//13
-		-1, -1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//14
-		 1, -1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//15
-
-		//Left
-		-1,  1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//16
-		-1,  1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//17
-		-1, -1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//18
-		-1, -1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//19
-
-		//Right
-		1,  1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//20
-		1,  1, -1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//21
-		1, -1,  1, 0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//22
-		1, -1, -1,  0.0f, 0.0f,	0.0f, 0.0f, 0.0f,//23
-	};
-
-	Mesh* skyBox = new Mesh();
-	skyBox->CreateMesh(cubeVertices, cubeIndices, 192, 36);
-	meshList.push_back(skyBox);
-
-}
 
 void createEnvPlane()
 {
@@ -261,8 +193,18 @@ void CreateShaders()
 	directionalShadowShader = Shader();
 	directionalShadowShader.CreateFromFiles("Shaders/directional_shadow_map.vert", "Shaders/directional_shadow_map.frag");
 
+	omniShadowShader = Shader();
+	omniShadowShader.CreateFromFiles("Shaders/omni_shadow_map.vert", "Shaders/omni_shadow_map.geo", "Shaders/omni_shadow_map.frag");
+
 	envMapShader = Shader();
 	envMapShader.CreateFromFiles("Shaders/enviroment_map.vert", "Shaders/enviroment_map.frag");
+
+	reflectionShader = Shader();
+	reflectionShader.CreateFromFiles("Shaders/reflection.vert", "Shaders/reflection.frag");
+
+	distortionShader = Shader();
+	distortionShader.CreateFromFiles("Shaders/reflection.vert", "Shaders/reflection_distortion.frag");
+
 
 }
 
@@ -326,13 +268,12 @@ void RenderScene()
 
 void EnvMapPass(glm::mat4 P2WMat, glm::vec3 viewpos)
 {
-	glm::mat4 model(1.0f);
 	envMapShader.UseShader();
 	envMapShader.SetPtoWTransform(&P2WMat);
 	envMapShader.SetViewPostion(&viewpos);
 
 	glActiveTexture(GL_TEXTURE0);
-	GLuint t_ID = CubeMap.getTextrueID();
+	
 	glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMap.getTextrueID());
 
 	meshList[3]->RenderMesh();
@@ -357,6 +298,66 @@ void DirectinalShadowMapPass(DirectionalLight* light)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void OmniShadowMapPass(PointLight* light)
+{
+	omniShadowShader.UseShader();
+
+	glViewport(0, 0, light->GetShadowMap()->GetShadowWidth(), light->GetShadowMap()->GetShadowHeight());
+
+	light->GetShadowMap()->Write();
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	uniformModel = omniShadowShader.GetModelLocation();
+	uniformOmniLightPos = omniShadowShader.GetOmniLightPosLocation();
+	uniformOmniFarPlane = omniShadowShader.GetOmniLightFarPlaneLocation();
+	
+	glUniform3f(uniformOmniLightPos, light->GetPosition().x, light->GetPosition().y, light->GetPosition().z);
+	glUniform1f(uniformOmniFarPlane, light->GetFarPlane());
+	omniShadowShader.SetOmniLightMatrices(light->CalculateLightTransform());
+
+	RenderScene();
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void reflectionObjPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
+{
+	glm::mat4 model(1.0f);
+
+	reflectionShader.UseShader();
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+
+	uniformModel = reflectionShader.GetModelLocation();
+	uniformProjection = reflectionShader.GetProjectionLocation();
+	uniformView = reflectionShader.GetViewLocation();
+	uniformViewPos = reflectionShader.GetViewPosLocation();
+
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+	glUniform3f(uniformViewPos, camera.getCamPostion().x, camera.getCamPostion().y, camera.getCamPostion().z);
+
+	CubeMap.UseCubeMap();
+
+	TeaPot.RenderModel();
+
+	distortionShader.UseShader();
+	model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
+	uniformModel = distortionShader.GetModelLocation();
+	uniformProjection = distortionShader.GetProjectionLocation();
+	uniformView = distortionShader.GetViewLocation();
+	uniformViewPos = distortionShader.GetViewPosLocation();
+
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+	glUniform3f(uniformViewPos, camera.getCamPostion().x, camera.getCamPostion().y, camera.getCamPostion().z);
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	meshList[2]->RenderMesh();
+
+}
+
 void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 {
 	shaderList[0].UseShader();
@@ -379,14 +380,14 @@ void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	glUniform3f(uniformViewPos, camera.getCamPostion().x, camera.getCamPostion().y, camera.getCamPostion().z);
 
 	shaderList[0].setDirectionalLight(&mainLight);
-	shaderList[0].setPointLights(pointLights, pointLightCount);
-	shaderList[0].setSpotLights(spotLights, spotLightCount);
+	shaderList[0].setPointLights(pointLights, pointLightCount, 3, 0);
+	shaderList[0].setSpotLights(spotLights, spotLightCount, 3 + pointLightCount, 0 + pointLightCount);
 	glm::mat4 mainLightTransMatrix = mainLight.CalculateLightTransform();
 	shaderList[0].SetDirectionalLightTransform(&mainLightTransMatrix);
 
-	mainLight.GetShadowMap()->Read(GL_TEXTURE1);
-	shaderList[0].SetTexture(0);
-	shaderList[0].SetDirectionalShadowMap(1);
+	mainLight.GetShadowMap()->Read(GL_TEXTURE2);
+	shaderList[0].SetTexture(1);
+	shaderList[0].SetDirectionalShadowMap(2);
 
 	glm::vec3 lowerLight = camera.getCamPostion();
 	lowerLight.y -= 0.2f;
@@ -432,6 +433,9 @@ int main()
 	ThirdOne = Model();
 	ThirdOne.LoadModel("Models/FinalBaseMesh.obj");
 
+	TeaPot = Model();
+	TeaPot.LoadModel("Models/teapot.obj");
+
 
 	mainLight = DirectionalLight(2048, 2048, 
 		1.0f, 1.0f, 1.0f,
@@ -439,12 +443,17 @@ int main()
 		0.0f, -15.0f, -10.0f);
 
 
-	pointLights[0] = PointLight(0.0f, 0.0f, 1.0f,
+	pointLights[0] = PointLight(1024,1024, 
+		0.01f, 100.0f, 
+		0.0f, 0.0f, 1.0f,
 		0.0f, 1.8f,
 		5.0f, 2.0f, 0.0f,
 		0.3f, 0.2f, 0.1f);
 	pointLightCount++;
-	pointLights[1] = PointLight(0.0f, 1.0f, 0.0f,
+	pointLights[1] = PointLight(
+		1024, 1024,
+		0.01f, 100.0f, 
+		0.0f, 1.0f, 0.0f,
 		0.0f, 1.0f,
 		-4.0f, 2.0f, 0.0f,
 		0.3f, 0.1f, 0.1f);
@@ -452,14 +461,18 @@ int main()
 
 
 	
-	spotLights[0] = SpotLight(1.0f, 0.0f, 0.0f,
+	spotLights[0] = SpotLight(1024, 1024,
+		0.01f, 100.0f, 
+		1.0f, 0.0f, 0.0f,
 		0.0f, 1.0f,
 		0.0f, 10.0f, 0.0f,
 		0.0f, -1.0f, 0.0f,
 		1.0f, 0.0f, 0.0f,
 		50.0f);
 	spotLightCount++;
-	spotLights[1] = SpotLight(1.0f, 1.0f, 1.0f,
+	spotLights[1] = SpotLight(1024, 1024,
+		0.01f, 100.0f, 
+		1.0f, 1.0f, 1.0f,
 		0.0f, 2.0f,
 		0.0f, -1.5f, 5.0f,
 		0.0f, -1.0f, -100.0f,
@@ -467,7 +480,7 @@ int main()
 		50.0f);
 	spotLightCount++;
 
-	glm::mat4 projection = glm::perspective(45.0f, mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 100.0f);
 
 	glm::mat4 inversPro = glm::inverse(projection);
 
@@ -488,7 +501,19 @@ int main()
 		
 
 		DirectinalShadowMapPass(&mainLight);
+
+		for (size_t i = 0; i < pointLightCount; i++)
+		{
+			OmniShadowMapPass(&pointLights[i]);
+		}
+
+		for (size_t i = 0; i < spotLightCount; i++)
+		{
+			OmniShadowMapPass(&spotLights[i]);
+		}
+
 		RenderPass(projection, camera.calculateViewMatrix());
+		//reflectionObjPass(projection, camera.calculateViewMatrix());
 
 		PtoWMat = glm::mat4(glm::inverse(camera.calculateViewMatrix())) * glm::mat4(inversPro);
 		

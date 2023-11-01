@@ -156,7 +156,7 @@ bool Textrue::LoadCubeMap()
 
 void Textrue::UseTextrue()
 {
-	glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, textrueID);
 }
 
