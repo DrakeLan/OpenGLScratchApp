@@ -23,6 +23,7 @@
 #include "PointLight.h"
 #include "SpotLight.h"
 #include "Material.h"
+#include "UniformBufferObject.h"
 
 #include "Model.h"
 
@@ -31,7 +32,10 @@ const float toRadians = 3.14159265f / 180.0f;
 
 
 GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformViewPos = 0,
-uniformSpecularIntensity = 0, uniformShininess = 0, uniformOmniLightPos = 0, uniformOmniFarPlane = 0;
+uniformSpecularIntensity = 0, uniformShininess = 0, uniformOmniLightPos = 0, uniformOmniFarPlane = 0, g_GlobalMatricesUBO = 0,
+uniformTessParam = 0, uniformTessHieght = 0, uniformDebugFlag = 0;
+
+UniformBufferObject globalMatrixUBO;
 
 Window mainWindow;
 std::vector<Mesh*> meshList;
@@ -42,6 +46,8 @@ Shader envMapShader;
 Shader reflectionShader;
 Shader distortionShader;
 
+Shader basicTessellationShader;
+
 
 Camera camera;
 
@@ -49,6 +55,7 @@ Textrue brickTextrue;
 Textrue dirtTextrue;
 Textrue PlainTextrue;
 Textrue grassTextrue;
+Textrue heightTextrue;
 Textrue CubeMap;
 
 
@@ -70,8 +77,12 @@ unsigned int spotLightCount = 0;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastTime = 0.0f;
+GLfloat tessParam = 16.0f;
+GLfloat tessHeight = 1.0f;
+GLfloat debugFlag = 0.0f;
 
 GLuint shader;
+
 
 
 // Vertex Shader code
@@ -136,10 +147,10 @@ void CreateObjects()
 
 	GLfloat floorVertices[] =
 	{
-		-10.0f, 0.0f, -10.0f,	0.0f, 0.0f,		0.0f, -1.0f, 0.0f,
-		10.0f, 0.0f, -10.0f,	10.0f, 0.0f,	0.0f, -1.0f, 0.0f,
-		-10.0f, 0.0f, 10.0f,	0.0f, 10.0f,	0.0f, -1.0f, 0.0f,
-		10.0f, 0.0f, 10.0f,		10.0f, 10.0f,	0.0f, -1.0f, 0.0f,
+		-10.0f, 0.0f, -10.0f,	0.0f, 0.0f,		0.0f, 1.0f, 0.0f,
+		10.0f, 0.0f, -10.0f,	1.0f, 0.0f,	0.0f, 1.0f, 0.0f,
+		-10.0f, 0.0f, 10.0f,	0.0f, 1.0f,	0.0f, 1.0f, 0.0f,
+		10.0f, 0.0f, 10.0f,		1.0f, 1.0f,	0.0f, 1.0f, 0.0f,
 
 	};
 
@@ -182,29 +193,50 @@ void createEnvPlane()
 	meshList.push_back(clipObj);
 }
 
+void CreateGlobalMatrixUBO()
+{
+	globalMatrixUBO = UniformBufferObject();
+	globalMatrixUBO.createUBO(sizeof(glm::mat4) * 2, GL_STREAM_DRAW);
 
+}
+
+void SetGlobalMatrixUBO(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, globalMatrixUBO.getBufferID());
+	//std::cout << glGetError() << std::endl; //Drop 1282 every frame after first call, why?
+	globalMatrixUBO.setBufferData(0, glm::value_ptr(projectionMatrix), sizeof(glm::mat4));
+	globalMatrixUBO.setBufferData(sizeof(glm::mat4), glm::value_ptr(viewMatrix), sizeof(glm::mat4));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
 
 void CreateShaders()
 {
 	Shader *shader1 = new Shader();
 	shader1->CreateFromFiles(vShader, fShader);
+	shader1->bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
 	shaderList.push_back(*shader1);
 
 	directionalShadowShader = Shader();
 	directionalShadowShader.CreateFromFiles("Shaders/directional_shadow_map.vert", "Shaders/directional_shadow_map.frag");
 
 	omniShadowShader = Shader();
-	omniShadowShader.CreateFromFiles("Shaders/omni_shadow_map.vert", "Shaders/omni_shadow_map.geo", "Shaders/omni_shadow_map.frag");
+	omniShadowShader.CreateFromFilesWithGeo("Shaders/omni_shadow_map.vert", "Shaders/omni_shadow_map.geo", "Shaders/omni_shadow_map.frag");
+
+	basicTessellationShader = Shader();
+	basicTessellationShader.CreateFromFilesWithTess("Shaders/baisc_tessellation.vert", "Shaders/basic_tessellation_control.tesscon", "Shaders/basic_tessellation_evaluate.tesseva", "Shaders/basic_tessellation.frag");
+	//basicTessellationShader.CreateFromFiles("Shaders/baisc_tessellation.vert", "Shaders/basic_tessellation.frag");
+	basicTessellationShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
 
 	envMapShader = Shader();
 	envMapShader.CreateFromFiles("Shaders/enviroment_map.vert", "Shaders/enviroment_map.frag");
 
 	reflectionShader = Shader();
 	reflectionShader.CreateFromFiles("Shaders/reflection.vert", "Shaders/reflection.frag");
+	reflectionShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
 
 	distortionShader = Shader();
 	distortionShader.CreateFromFiles("Shaders/reflection.vert", "Shaders/reflection_distortion.frag");
-
+	distortionShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
 
 }
 
@@ -233,7 +265,7 @@ void RenderScene()
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
-	//model = glm::scale(model, glm::vec3(0.06f, 0.06f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.0f, 0.0f, 0.0f));//
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	PlainTextrue.UseTextrue();
 	PlainMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
@@ -251,7 +283,7 @@ void RenderScene()
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(3.0f, 0.0f, 0.0f));
 	//model = glm::rotate(model, -90.0f * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+	model = glm::scale(model, glm::vec3(0.0f, 0.0f, 0.0f));//1.0
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	blackhawk.RenderModel();
@@ -259,11 +291,83 @@ void RenderScene()
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0f));
 	//model = glm::rotate(model, -90.0f * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));
+	model = glm::scale(model, glm::vec3(0.0f, 0.0f, 0.0f));//0.3
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	ThirdOne.RenderModel();
 
+}
+
+void InitTessParams()
+{
+	uniformTessParam = basicTessellationShader.GetTessParamLocation();
+	uniformTessHieght = basicTessellationShader.GetTessHeightLocation();
+	uniformDebugFlag = basicTessellationShader.GetDebugFlagLocation();
+
+}
+
+void TessellationOp(bool* keys)
+{
+	if (keys[GLFW_KEY_RIGHT])
+	{
+		if (tessParam <= 128.0f)
+		{
+			tessParam += 1.0;
+			if (tessParam > 120.0f)
+			{
+				tessParam = 120.0f;
+			}
+		}
+	
+	}
+
+	if (keys[GLFW_KEY_LEFT])
+	{
+		if (tessParam >= 1.0f)
+		{
+			tessParam -= 1.0f;
+			if (tessParam < 1.0f)
+			{
+				tessParam = 1.0f;
+			}
+		}
+	}
+
+	if (keys[GLFW_KEY_UP])
+	{
+		if (tessHeight <= 5.0f)
+		{
+			tessHeight += 0.1;
+			if (tessHeight > 5.0f)
+			{
+				tessHeight = 5.0f;
+			}
+		}
+	}
+
+	if (keys[GLFW_KEY_DOWN])
+	{
+		if (tessHeight >= 0.0f)
+		{
+			tessHeight -= 0.1f;
+			if (tessHeight < 0.0f)
+			{
+				tessHeight = 0.0f;
+			}
+		}
+	}
+
+	if (keys[GLFW_KEY_N])
+	{
+		if (debugFlag > 0.5f)
+		{
+			debugFlag = 0.0f;
+		}
+		else
+		{
+			debugFlag = 1.0f;
+		}
+	}
 }
 
 void EnvMapPass(glm::mat4 P2WMat, glm::vec3 viewpos)
@@ -320,7 +424,7 @@ void OmniShadowMapPass(PointLight* light)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void reflectionObjPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
+void reflectionObjPass()
 {
 	glm::mat4 model(1.0f);
 
@@ -329,13 +433,9 @@ void reflectionObjPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 
 	uniformModel = reflectionShader.GetModelLocation();
-	uniformProjection = reflectionShader.GetProjectionLocation();
-	uniformView = reflectionShader.GetViewLocation();
 	uniformViewPos = reflectionShader.GetViewPosLocation();
 
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniform3f(uniformViewPos, camera.getCamPostion().x, camera.getCamPostion().y, camera.getCamPostion().z);
 
 	CubeMap.UseCubeMap();
@@ -345,26 +445,54 @@ void reflectionObjPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	distortionShader.UseShader();
 	model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
 	uniformModel = distortionShader.GetModelLocation();
-	uniformProjection = distortionShader.GetProjectionLocation();
-	uniformView = distortionShader.GetViewLocation();
 	uniformViewPos = distortionShader.GetViewPosLocation();
 
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 	glUniform3f(uniformViewPos, camera.getCamPostion().x, camera.getCamPostion().y, camera.getCamPostion().z);
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	meshList[2]->RenderMesh();
 
 }
 
-void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
+void TessellationObjectPass(GLfloat tessParam, GLfloat tessHeight)
+{
+	glm::mat4 model(1.0f);
+
+	basicTessellationShader.UseShader();
+
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+
+	uniformModel = basicTessellationShader.GetModelLocation();
+
+
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	
+	glUniform1f(uniformDebugFlag, 0.0f);
+	glUniform1f(uniformTessParam, tessParam);
+	glUniform1f(uniformTessHieght, tessHeight);
+
+	glActiveTexture(GL_TEXTURE0);
+
+	glBindTexture(GL_TEXTURE_2D, heightTextrue.getTextrueID());
+
+	meshList[2]->RenderMeshasPatch();
+
+	if (debugFlag > 0.5)
+	{
+		glUniform1f(uniformDebugFlag, 1.0);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		meshList[2]->RenderMeshasPatch();
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
+
+
+}
+
+void RenderPass()
 {
 	shaderList[0].UseShader();
 
 	uniformModel = shaderList[0].GetModelLocation();
-	uniformProjection = shaderList[0].GetProjectionLocation();
-	uniformView = shaderList[0].GetViewLocation();
 	uniformViewPos = shaderList[0].GetViewPosLocation();
 	uniformSpecularIntensity = shaderList[0].GetSpecularIntensityLocation();
 	uniformShininess = shaderList[0].GetShininessLocation();
@@ -375,8 +503,7 @@ void RenderPass(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
-	glUniformMatrix4fv(uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+
 	glUniform3f(uniformViewPos, camera.getCamPostion().x, camera.getCamPostion().y, camera.getCamPostion().z);
 
 	shaderList[0].setDirectionalLight(&mainLight);
@@ -404,7 +531,13 @@ int main()
 
 	CreateObjects();
 	createEnvPlane();
+
+	CreateGlobalMatrixUBO();
+	globalMatrixUBO.bindBufferBaseToBindingPoint(MATRICES_BLOCK_BINDING_POINT);
+
 	CreateShaders();
+
+	InitTessParams();
 
 	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.5f);
 
@@ -416,6 +549,8 @@ int main()
 	PlainTextrue.LoadTextrueAlpha();
 	grassTextrue = Textrue((char*)("Textures/GrassTilling.png"));
 	grassTextrue.LoadTextrueAlpha();
+	heightTextrue = Textrue((char*)("Textures/teapot_disp.png"));
+	heightTextrue.LoadTextrue();
 	const char* cubeMapPath[6] = { "Textures/posx.jpg", "Textures/negx.jpg", "Textures/posy.jpg", "Textures/negy.jpg", "Textures/posz.jpg", "Textures/negz.jpg" };
 	CubeMap = Textrue(cubeMapPath);
 	CubeMap.LoadCubeMap();
@@ -486,6 +621,10 @@ int main()
 
 	glm::mat4 PtoWMat = glm::mat4(inversPro);
 
+	glm::vec4 testColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+
+	
+	
 	//loop until window close
 	while (!mainWindow.getShouldClose())
 	{
@@ -498,7 +637,8 @@ int main()
 
 		camera.KeyControl(mainWindow.getsKeys(), deltaTime);
 		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
-		
+	
+		SetGlobalMatrixUBO(projection, camera.calculateViewMatrix());
 
 		DirectinalShadowMapPass(&mainLight);
 
@@ -512,8 +652,11 @@ int main()
 			OmniShadowMapPass(&spotLights[i]);
 		}
 
-		RenderPass(projection, camera.calculateViewMatrix());
-		//reflectionObjPass(projection, camera.calculateViewMatrix());
+		
+		RenderPass();
+		//reflectionObjPass();
+		TessellationOp(mainWindow.getsKeys());
+		TessellationObjectPass(tessParam, tessHeight);
 
 		PtoWMat = glm::mat4(glm::inverse(camera.calculateViewMatrix())) * glm::mat4(inversPro);
 		

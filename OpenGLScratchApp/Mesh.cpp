@@ -45,6 +45,15 @@ void Mesh::RenderMesh()
 	glBindVertexArray(0);
 }
 
+void Mesh::RenderMeshasPatch()
+{
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glDrawElements(GL_PATCHES, indexCount, GL_UNSIGNED_INT, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
 void Mesh::ClearMesh()
 {
 	if (IBO != 0)

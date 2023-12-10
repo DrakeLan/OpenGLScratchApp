@@ -22,7 +22,8 @@ public:
 
 	void CreateFromString(const char* vertexCode, const char* fragmentCode);
 	void CreateFromFiles(const char* vertexLocation, const char* fragmentLocation);
-	void CreateFromFiles(const char* vertexLocation, const char* geometryLocation, const char* fragmentLocation);
+	void CreateFromFilesWithGeo(const char* vertexLocation, const char* geometryLocation, const char* fragmentLocation);
+	void CreateFromFilesWithTess(const char* vertexLocation, const char* tessControlLocation, const char* tessEvaluateLocation, const char* fragmentLocation);
 
 	std::string ReadFile(const char* fileLocation);
 
@@ -38,6 +39,9 @@ public:
 	GLuint GetShininessLocation();
 	GLuint GetOmniLightPosLocation();
 	GLuint GetOmniLightFarPlaneLocation();
+	GLuint GetTessParamLocation();
+	GLuint GetTessHeightLocation();
+	GLuint GetDebugFlagLocation();
 
 	void setDirectionalLight(DirectionalLight * dLight);
 	void setPointLights(PointLight * pLight, unsigned int lightCount, unsigned int textureUnit, unsigned int offset);
@@ -48,6 +52,8 @@ public:
 	void SetPtoWTransform(glm::mat4* p2wTransform);
 	void SetViewPostion(glm::vec3* viewPos);
 	void SetOmniLightMatrices(std::vector<glm::mat4>lightMatrices);
+
+	void bindUniformBlockToBindingPoint(const std::string& uniformBlockName, const GLuint bindingPoint);
 
 	void UseShader();
 	void ClearShader();
@@ -63,7 +69,8 @@ private:
 		uniformTexture,
 		uniformDirectionalLightTransform, uniformDirectionalShadowMap,
 		uniformPtoWTransform,
-		uniformOmniLightPos, uniformOmniLightFarPlane;
+		uniformOmniLightPos, uniformOmniLightFarPlane,
+		uniformTessParam, uniformTessHeight, uniformDebugFlag;
 
 	GLuint uniformOmniLightMatrices[6];
 
@@ -117,7 +124,8 @@ private:
 	}uniformOmniShadowMap[MAX_POINT_LIGHTS + MAX_SPOT_LIGHTS];
 
 	void CompileShader(const char* vertexCode, const char* fragmentCode);
-	void CompileShader(const char* vertexLocation, const char* geometryLocation, const char* fragmentLocation);
+	void CompileShaderWithGeo(const char* vertexCode, const char* geometryCode, const char* fragmentCode);
+	void CompileShaderWithTess(const char* vertexCode, const char* tessControlCode, const char* tessEvaluateLocation, const char* fragmentCode);
 	void AddShader(GLuint theProgram, const char* shaderCode, GLenum saderType);
 
 	void CompileProgram();

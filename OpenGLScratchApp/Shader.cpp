@@ -24,7 +24,7 @@ void Shader::CreateFromFiles(const char* vertexLocation, const char* fragmentLoc
 	CompileShader(vertexCode, fragmentCode);
 }
 
-void Shader::CreateFromFiles(const char* vertexLocation, const char* geometryLocation, const char* fragmentLocation)
+void Shader::CreateFromFilesWithGeo(const char* vertexLocation, const char* geometryLocation, const char* fragmentLocation)
 {
 	std::string vertexString = ReadFile(vertexLocation);
 	std::string geometeryString = ReadFile(geometryLocation);
@@ -32,7 +32,21 @@ void Shader::CreateFromFiles(const char* vertexLocation, const char* geometryLoc
 	const char* vertexCode = vertexString.c_str();
 	const char* geometryCode = geometeryString.c_str();
 	const char* fragmentCode = fragmentString.c_str();
-	CompileShader(vertexCode, geometryCode, fragmentCode);
+	CompileShaderWithGeo(vertexCode, geometryCode, fragmentCode);
+
+}
+
+void Shader::CreateFromFilesWithTess(const char* vertexLocation, const char* tessControlLocation, const char* tessEvaluateLocation, const char* fragmentLocation)
+{
+	std::string vertexString = ReadFile(vertexLocation);
+	std::string tessControlString = ReadFile(tessControlLocation);
+	std::string tessEvaluateString = ReadFile(tessEvaluateLocation);
+	std::string fragmentString = ReadFile(fragmentLocation);
+	const char* vertexCode = vertexString.c_str();
+	const char* tessControlCode = tessControlString.c_str();
+	const char* tessEvaluateCode = tessEvaluateString.c_str();
+	const char* fragmentCode = fragmentString.c_str();
+	CompileShaderWithTess(vertexCode, tessControlCode, tessEvaluateCode, fragmentCode);
 
 }
 
@@ -77,7 +91,7 @@ void Shader::CompileShader(const char* vertexCode, const char* fragmentCode)
 	CompileProgram();
 }
 
-void Shader::CompileShader(const char* vertexCode, const char* geometryCode, const char* fragmentCode)
+void Shader::CompileShaderWithGeo(const char* vertexCode, const char* geometryCode, const char* fragmentCode)
 {
 	shaderID = glCreateProgram();
 
@@ -89,6 +103,25 @@ void Shader::CompileShader(const char* vertexCode, const char* geometryCode, con
 
 	AddShader(shaderID, vertexCode, GL_VERTEX_SHADER);
 	AddShader(shaderID, geometryCode, GL_GEOMETRY_SHADER);
+	AddShader(shaderID, fragmentCode, GL_FRAGMENT_SHADER);
+
+
+	CompileProgram();
+}
+
+void Shader::CompileShaderWithTess(const char* vertexCode, const char* tessControlCode, const char* tessEvaluateCode, const char* fragmentCode)
+{
+	shaderID = glCreateProgram();
+
+	if (!shaderID)
+	{
+		printf("Error creating shader program!\n");
+		return;
+	}
+
+	AddShader(shaderID, vertexCode, GL_VERTEX_SHADER);
+	AddShader(shaderID, tessControlCode, GL_TESS_CONTROL_SHADER); 
+	AddShader(shaderID, tessEvaluateCode, GL_TESS_EVALUATION_SHADER);
 	AddShader(shaderID, fragmentCode, GL_FRAGMENT_SHADER);
 
 
@@ -119,6 +152,7 @@ void Shader::CompileProgram()
 		return;
 	}
 
+	//To do: Clarify different shader to get the different uniform location
 	uniformModel = glGetUniformLocation(shaderID, "model");
 	uniformProjection = glGetUniformLocation(shaderID, "projection");
 	uniformView = glGetUniformLocation(shaderID, "view");
@@ -133,6 +167,11 @@ void Shader::CompileProgram()
 	uniformPointLightCount = glGetUniformLocation(shaderID, "pointLightCount");
 
 	uniformPtoWTransform = glGetUniformLocation(shaderID, "PToWTransform");
+
+	uniformTessParam = glGetUniformLocation(shaderID, "uniformTessParam");
+	uniformTessHeight = glGetUniformLocation(shaderID, "uniformTessHeight");
+
+	uniformDebugFlag = glGetUniformLocation(shaderID, "debugFlag");
 
 
 	for (size_t i = 0; i < MAX_POINT_LIGHTS; i++)
@@ -286,6 +325,21 @@ GLuint Shader::GetOmniLightFarPlaneLocation()
 	return uniformOmniLightFarPlane;
 }
 
+GLuint Shader::GetTessParamLocation()
+{
+	return uniformTessParam;
+}
+
+GLuint Shader::GetTessHeightLocation()
+{
+	return uniformTessHeight;
+}
+
+GLuint Shader::GetDebugFlagLocation()
+{
+	return uniformDebugFlag;
+}
+
 void Shader::setDirectionalLight(DirectionalLight * dLight)
 {
 	dLight->UseLight(uniformDirectionLight.uniformAmbientIntensity, uniformDirectionLight.uniformColor, 
@@ -360,6 +414,14 @@ void Shader::SetOmniLightMatrices(std::vector<glm::mat4>lightMatrices)
 	for (size_t i = 0; i < 6; i++)
 	{
 		glUniformMatrix4fv(uniformOmniLightMatrices[i], 1, GL_FALSE, glm::value_ptr(lightMatrices[i]));
+	}
+}
+
+void Shader::bindUniformBlockToBindingPoint(const std::string& uniformBlockName, const GLuint bindingPoint)
+{
+	const auto blockIndex = glGetUniformBlockIndex(shaderID, uniformBlockName.c_str());
+	if (blockIndex != GL_INVALID_INDEX) {
+		glUniformBlockBinding(shaderID, blockIndex, bindingPoint);
 	}
 }
 

@@ -40,6 +40,8 @@
     <ClCompile Include="Window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OmniShadowMap.cpp" />
+    <ClCompile Include="UniformBufferObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -81,6 +83,8 @@
     <ClInclude Include="Window.h">
       <Filter>Head Files</Filter>
     </ClInclude>
+    <ClInclude Include="OmniShadowMap.h" />
+    <ClInclude Include="UniformBufferObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Head Files">

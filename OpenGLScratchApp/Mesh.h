@@ -8,6 +8,7 @@ public:
 	Mesh();
 	void CreateMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVer, unsigned int numberOfIndices);
 	void RenderMesh();
+	void RenderMeshasPatch();
 	void ClearMesh();
 	~Mesh();
 

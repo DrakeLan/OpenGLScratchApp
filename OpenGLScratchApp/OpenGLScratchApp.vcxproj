@@ -176,6 +176,7 @@
     <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="Textrue.cpp" />
+    <ClCompile Include="UniformBufferObject.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -192,6 +193,7 @@
     <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="Textrue.h" />
+    <ClInclude Include="UniformBufferObject.h" />
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
