@@ -36,6 +36,8 @@ uniformSpecularIntensity = 0, uniformShininess = 0, uniformOmniLightPos = 0, uni
 uniformTessParam = 0, uniformTessHieght = 0, uniformDebugFlag = 0;
 
 UniformBufferObject globalMatrixUBO;
+UniformBufferObject instancingMatrixUBO;
+UniformBufferObject instancingColorUBO;
 
 Window mainWindow;
 std::vector<Mesh*> meshList;
@@ -47,6 +49,8 @@ Shader reflectionShader;
 Shader distortionShader;
 
 Shader basicTessellationShader;
+
+Shader basicInstancingShader;
 
 
 Camera camera;
@@ -83,6 +87,11 @@ GLfloat debugFlag = 0.0f;
 
 GLuint shader;
 
+glm::mat4 instancingMatrics[1000];
+glm::vec4 instancingColor[1000];
+
+//To do: create a OP class to control, do not create a flag every frame
+bool pressedFlag = false;
 
 
 // Vertex Shader code
@@ -197,17 +206,100 @@ void CreateGlobalMatrixUBO()
 {
 	globalMatrixUBO = UniformBufferObject();
 	globalMatrixUBO.createUBO(sizeof(glm::mat4) * 2, GL_STREAM_DRAW);
+	globalMatrixUBO.bindBufferBaseToBindingPoint(MATRICES_BLOCK_BINDING_POINT);
 
+}
+
+void CreateInstancingUBO(const int amounts)
+{
+	float counts = sizeof(instancingMatrics) / sizeof(instancingMatrics[0]);
+
+	instancingMatrixUBO = UniformBufferObject();
+	instancingMatrixUBO.createUBO(sizeof(glm::mat4) * counts, GL_STREAM_DRAW);
+
+	instancingColorUBO = UniformBufferObject();
+	instancingColorUBO.createUBO(sizeof(glm::vec4) * counts, GL_STREAM_DRAW);
+
+	glm::mat4 model(1.0f);
+	float offset = 5.0f;
+	float radius = 10.0f;
+
+	float randColR = 0.0;
+	float randColG = 0.0;
+	float randColB = 0.0;
+
+	int spacingCounts = 0;
+
+
+
+	for (float x = 0.0f; x < 10.0f; x++)
+	{
+		for (float y = 0.0f; y < 10.0f; y++)
+		{
+			for (float z = 0.0f; z < 10.0; z++)
+			{
+
+				model = glm::mat4(1.0f);
+				//model = glm::scale(model, glm::vec3(1.0));
+				model = glm::translate(model, (glm::vec3(x - 4.5f, y - 4.5f, z - 4.5f) * 5.0f));
+				
+				if (spacingCounts < counts)
+				{
+					instancingMatrics[spacingCounts] = model;
+
+					randColR = (rand() % 100) / 100.0f;
+					randColG = (rand() % 100) / 100.0f;
+					randColB = (rand() % 100) / 100.0f;
+
+					instancingColor[spacingCounts] = glm::vec4(randColR, randColG, randColB, 1.0);
+
+
+					spacingCounts++;
+				}
+			}
+		}
+
+	}
+		
+		// 1. translation: displace along circle with 'radius' in range [-offset, offset]
+		/*float angle = (float)i / (float)amounts * 360.0f;
+		float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float x = sin(angle) * radius + displacement;
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float y = displacement * 0.4f; // keep height of field smaller compared to width of x and z
+		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
+		float z = cos(angle) * radius + displacement;
+		model = glm::translate(model, glm::vec3(x, y, z));
+
+		// 2. scale: scale between 0.05 and 0.25f
+		float scale = (rand() % 20) / 100.0f + 0.05;
+		model = glm::scale(model, glm::vec3(scale));
+
+		// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
+		float rotAngle = (rand() % 360);
+		model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));*/
+
+
+		//model = glm::translate(model, glm::vec3(i, 0.0f, 0.0f));
+
+		
+
+
+	instancingMatrixUBO.setBufferData(0.0, instancingMatrics, sizeof(instancingMatrics));
+	instancingMatrixUBO.bindBufferBaseToBindingPoint(INSTANCING_BLOCK_BINDING_POINT_ONE);
+
+	instancingColorUBO.setBufferData(0.0, &instancingColor, sizeof(instancingColor));
+	instancingColorUBO.bindBufferBaseToBindingPoint(INSTANCING_BLOCK_BINDING_POINT_TWO);
 }
 
 void SetGlobalMatrixUBO(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 {
-	glBindBuffer(GL_UNIFORM_BUFFER, globalMatrixUBO.getBufferID());
 	//std::cout << glGetError() << std::endl; //Drop 1282 every frame after first call, why?
 	globalMatrixUBO.setBufferData(0, glm::value_ptr(projectionMatrix), sizeof(glm::mat4));
 	globalMatrixUBO.setBufferData(sizeof(glm::mat4), glm::value_ptr(viewMatrix), sizeof(glm::mat4));
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
+
 
 void CreateShaders()
 {
@@ -223,9 +315,15 @@ void CreateShaders()
 	omniShadowShader.CreateFromFilesWithGeo("Shaders/omni_shadow_map.vert", "Shaders/omni_shadow_map.geo", "Shaders/omni_shadow_map.frag");
 
 	basicTessellationShader = Shader();
-	basicTessellationShader.CreateFromFilesWithTess("Shaders/baisc_tessellation.vert", "Shaders/basic_tessellation_control.tesscon", "Shaders/basic_tessellation_evaluate.tesseva", "Shaders/basic_tessellation.frag");
+	basicTessellationShader.CreateFromFilesWithTess("Shaders/basic_tessellation.vert", "Shaders/basic_tessellation_control.tesscon", "Shaders/basic_tessellation_evaluate.tesseva", "Shaders/basic_tessellation.frag");
 	//basicTessellationShader.CreateFromFiles("Shaders/baisc_tessellation.vert", "Shaders/basic_tessellation.frag");
 	basicTessellationShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
+
+	basicInstancingShader = Shader();
+	basicInstancingShader.CreateFromFiles("Shaders/basic_instancing.vert", "Shaders/basic_instancing.frag");
+	basicInstancingShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
+	basicInstancingShader.bindUniformBlockToBindingPoint("instancingMatrixBlock", INSTANCING_BLOCK_BINDING_POINT_ONE);
+	basicInstancingShader.bindUniformBlockToBindingPoint("instancingColorBlock", INSTANCING_BLOCK_BINDING_POINT_TWO);
 
 	envMapShader = Shader();
 	envMapShader.CreateFromFiles("Shaders/enviroment_map.vert", "Shaders/enviroment_map.frag");
@@ -306,8 +404,10 @@ void InitTessParams()
 
 }
 
+
 void TessellationOp(bool* keys)
 {
+
 	if (keys[GLFW_KEY_RIGHT])
 	{
 		if (tessParam <= 128.0f)
@@ -359,14 +459,25 @@ void TessellationOp(bool* keys)
 
 	if (keys[GLFW_KEY_N])
 	{
-		if (debugFlag > 0.5f)
+		if (!pressedFlag)
 		{
-			debugFlag = 0.0f;
+			if (debugFlag > 0.5f)
+			{
+				debugFlag = 0.0f;
+			}
+			else
+			{
+				debugFlag = 1.0f;
+			}
+
+			pressedFlag = true;
+
 		}
-		else
-		{
-			debugFlag = 1.0f;
-		}
+
+	}
+	else
+	{
+		pressedFlag = false;
 	}
 }
 
@@ -488,6 +599,14 @@ void TessellationObjectPass(GLfloat tessParam, GLfloat tessHeight)
 
 }
 
+void InstancingPass()
+{
+	basicInstancingShader.UseShader();
+
+	blackhawk.RenderModelInstancing(1000);
+
+}
+
 void RenderPass()
 {
 	shaderList[0].UseShader();
@@ -533,7 +652,10 @@ int main()
 	createEnvPlane();
 
 	CreateGlobalMatrixUBO();
-	globalMatrixUBO.bindBufferBaseToBindingPoint(MATRICES_BLOCK_BINDING_POINT);
+	
+
+	CreateInstancingUBO(1000);
+
 
 	CreateShaders();
 
@@ -655,12 +777,14 @@ int main()
 		
 		RenderPass();
 		//reflectionObjPass();
-		TessellationOp(mainWindow.getsKeys());
-		TessellationObjectPass(tessParam, tessHeight);
+		//TessellationOp(mainWindow.getsKeys());
+		//TessellationObjectPass(tessParam, tessHeight);
+
+		InstancingPass();
 
 		PtoWMat = glm::mat4(glm::inverse(camera.calculateViewMatrix())) * glm::mat4(inversPro);
 		
-		EnvMapPass(PtoWMat, camera.getCamPostion());
+		//EnvMapPass(PtoWMat, camera.getCamPostion());
 
 		glUseProgram(0);
 

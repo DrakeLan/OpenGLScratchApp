@@ -9,6 +9,7 @@ public:
 	void CreateMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVer, unsigned int numberOfIndices);
 	void RenderMesh();
 	void RenderMeshasPatch();
+	void RenderMeshInstancing(GLsizei instancingCount);
 	void ClearMesh();
 	~Mesh();
 

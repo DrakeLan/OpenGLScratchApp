@@ -17,6 +17,7 @@ public:
 
 	void LoadModel(const std::string& fileName);
 	void RenderModel();
+	void RenderModelInstancing(GLsizei instancingCount);
 	void clearModel();
 
 	~Model();

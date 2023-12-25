@@ -26,6 +26,8 @@ void UniformBufferObject::bindUBO() const
 	glBindBuffer(GL_UNIFORM_BUFFER, _bufferID);
 }
 
+
+
 void UniformBufferObject::setBufferData(const size_t offset, const void* ptrData, const size_t dataSize)
 {
     if (offset >= _byteSize)
@@ -40,7 +42,9 @@ void UniformBufferObject::setBufferData(const size_t offset, const void* ptrData
         return;
     }
 
+    glBindBuffer(GL_UNIFORM_BUFFER, _bufferID);
     glBufferSubData(GL_UNIFORM_BUFFER, offset, dataSize, ptrData);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void UniformBufferObject::bindBufferBaseToBindingPoint(const GLuint bindingPoint)

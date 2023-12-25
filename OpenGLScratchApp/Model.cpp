@@ -21,6 +21,23 @@ void Model::RenderModel()
 
 }
 
+void Model::RenderModelInstancing(GLsizei instancingCount)
+{
+
+	for (size_t i = 0; i < meshList.size(); i++)
+	{
+		unsigned int materialIndex = meshToTex[i];
+
+		if (materialIndex < textureList.size() && textureList[materialIndex])
+		{
+			textureList[materialIndex]->UseTextrue();
+		}
+
+		meshList[i]->RenderMeshInstancing(instancingCount);
+	}
+
+}
+
 void Model::LoadModel(const std::string & fileName)
 {
 	Assimp::Importer importer;
