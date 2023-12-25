@@ -214,6 +214,8 @@ void CreateInstancingUBO(const int amounts)
 {
 	float counts = sizeof(instancingMatrics) / sizeof(instancingMatrics[0]);
 
+	//Every UBO has a maxium size, so matrix and color slpit in two UBO, GL_MAX_UNIFORM_BLOCK_SIZE to check
+
 	instancingMatrixUBO = UniformBufferObject();
 	instancingMatrixUBO.createUBO(sizeof(glm::mat4) * counts, GL_STREAM_DRAW);
 
@@ -261,29 +263,6 @@ void CreateInstancingUBO(const int amounts)
 
 	}
 		
-		// 1. translation: displace along circle with 'radius' in range [-offset, offset]
-		/*float angle = (float)i / (float)amounts * 360.0f;
-		float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float x = sin(angle) * radius + displacement;
-		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float y = displacement * 0.4f; // keep height of field smaller compared to width of x and z
-		displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-		float z = cos(angle) * radius + displacement;
-		model = glm::translate(model, glm::vec3(x, y, z));
-
-		// 2. scale: scale between 0.05 and 0.25f
-		float scale = (rand() % 20) / 100.0f + 0.05;
-		model = glm::scale(model, glm::vec3(scale));
-
-		// 3. rotation: add random rotation around a (semi)randomly picked rotation axis vector
-		float rotAngle = (rand() % 360);
-		model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));*/
-
-
-		//model = glm::translate(model, glm::vec3(i, 0.0f, 0.0f));
-
-		
-
 
 	instancingMatrixUBO.setBufferData(0.0, instancingMatrics, sizeof(instancingMatrics));
 	instancingMatrixUBO.bindBufferBaseToBindingPoint(INSTANCING_BLOCK_BINDING_POINT_ONE);
