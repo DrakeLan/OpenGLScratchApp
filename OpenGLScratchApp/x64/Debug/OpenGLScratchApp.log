@@ -1,0 +1,27 @@
+﻿  Camera.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\Camera.h(3,10): fatal  error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  DirectionalLight.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\Light.h(3,10): fatal  error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  Light.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\Light.h(3,10): fatal  error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  Material.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\Material.h(3,10): fatal  error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  Mesh.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\Mesh.h(3,10): fatal  error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  Model.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\Model.h(6,10): fatal  error C1083: Cannot open include file: 'assimp\scene.h': No such file or directory
+  OpenGLScratchApp.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\OpenGLScratchApp.cpp(8,10): fatal  error C1083: Cannot open include file: 'GL/glew.h': No such file or directory
+  PointLight.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\Light.h(3,10): fatal  error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  Shader.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\Shader.h(8,10): fatal  error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  ShadowMap.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\ShadowMap.h(4,10): fatal  error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  SpotLight.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\Light.h(3,10): fatal  error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  Textrue.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\Textrue.h(3,10): fatal  error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  Window.cpp
+E:\Personal\Project\OpenGLScratchApp\OpenGLScratchApp\Window.h(5,10): fatal  error C1083: Cannot open include file: 'GL\glew.h': No such file or directory
+  Generating Code...
