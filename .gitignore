@@ -33,3 +33,7 @@
 *.app
 *.ipch
 *.tlog
+
+
+External Libs Backup/
+Debug/
