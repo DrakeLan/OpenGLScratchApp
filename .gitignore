@@ -37,13 +37,8 @@
 #Debug
 Debug\
 
-OpenGLScratchApp/Debug/OpenGLScratchApp.log
-.vs/OpenGLScratchApp/FileContentIndex/ea1fb5fc-34aa-4446-bbfb-2cf199ecab0b.vsidx
-.vs/OpenGLScratchApp/FileContentIndex/read.lock
-.vs/OpenGLScratchApp/v15/.suo
-.vs/OpenGLScratchApp/v15/Browse.VC.db
-.vs/OpenGLScratchApp/v16/.suo
-.vs/OpenGLScratchApp/v16/Browse.VC.db
-.vs/OpenGLScratchApp/v16/Browse.VC.db-shm
-.vs/OpenGLScratchApp/v16/Browse.VC.db-wal
-.vs/OpenGLScratchApp/v16/Browse.VC.opendb
+OpenGLScratchApp/Debug/
+.vs/OpenGLScratchApp/FileContentIndex/
+.vs/OpenGLScratchApp/v15/
+.vs/OpenGLScratchApp/v16/
+.vs/OpenGLScratchApp/v17/
