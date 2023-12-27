@@ -35,6 +35,6 @@
 *.tlog
 
 #Debug
-Debug/
+Debug\
 
 OpenGLScratchApp/Debug/OpenGLScratchApp.log
