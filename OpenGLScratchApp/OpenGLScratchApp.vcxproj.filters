@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectionalLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGLScratchApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PointLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowMap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SpotLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Textrue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OmniShadowMap.cpp" />
+    <ClCompile Include="UniformBufferObject.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Camera.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonValues.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMap.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Textrue.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Head Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OmniShadowMap.h" />
+    <ClInclude Include="UniformBufferObject.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Head Files">
+      <UniqueIdentifier>{a7863699-9312-4fe6-bc36-00be0a74304a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{f6c0256d-3cc1-4e13-87de-7451537a0e2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="NewFilter1">
+      <UniqueIdentifier>{ba399d70-ac6a-48a3-97e0-db27f7cc7ddf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
