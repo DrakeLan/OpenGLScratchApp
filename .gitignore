@@ -33,3 +33,7 @@
 *.app
 *.ipch
 *.tlog
+
+#Debug
+Debug/
+
