@@ -157,7 +157,6 @@ void Shader::CompileProgram()
 	uniformProjection = glGetUniformLocation(shaderID, "projection");
 	uniformView = glGetUniformLocation(shaderID, "view");
 	uniformDirectionLight.uniformColor = glGetUniformLocation(shaderID, "directionalLight.base.color");
-	std::cout << glGetError() << std::endl;
 	uniformDirectionLight.uniformAmbientIntensity = glGetUniformLocation(shaderID, "directionalLight.base.ambientIntensity");
 	uniformDirectionLight.uniformDirection = glGetUniformLocation(shaderID, "directionalLight.direction");
 	uniformDirectionLight.uniformDiffuseIntensity = glGetUniformLocation(shaderID, "directionalLight.base.diffuseIntensity");
