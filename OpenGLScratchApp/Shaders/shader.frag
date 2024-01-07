@@ -146,7 +146,7 @@ vec4 CalcLightByDirection(Light light, vec3 direction, float shadowFactor)
 {
 	vec4 ambientColor = vec4(light.color, 1.0) * light.ambientIntensity;			
 
-	float diffuseFactor = max(dot(normalize(direction), normalize(Normal)), 0.0);
+	float diffuseFactor = max(dot(-normalize(direction), normalize(Normal)), 0.0);
 	vec4 diffuseColor = vec4(light.color, 1.0) * light.diffuseIntensity * diffuseFactor;
 
 	vec4 speularColor = vec4(0, 0, 0, 0);
@@ -230,5 +230,8 @@ void main()
 	finalColor += CalcPointLights();	
 	finalColor += CalSpotLights();					    	
 	color = texture(theTexture, TexCoord) * finalColor;
-   
+
+	color = vec4(max(dot(-normalize(directionalLight.direction), normalize(Normal)), 0.0));
+	color = vec4(-normalize(directionalLight.direction), 1.0);
+	
 }

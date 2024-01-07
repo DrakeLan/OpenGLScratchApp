@@ -27,6 +27,7 @@ public:
 
 	std::string ReadFile(const char* fileLocation);
 
+	GLuint GetShaderID();
 	GLuint GetProjectionLocation();
 	GLuint GetModelLocation();
 	GLuint GetViewLocation();
@@ -74,7 +75,8 @@ private:
 
 	GLuint uniformOmniLightMatrices[6];
 
-	struct 
+
+	struct directionLightData
 	{
 		GLuint uniformColor;
 		GLuint uniformAmbientIntensity;
@@ -82,7 +84,9 @@ private:
 
 		GLuint uniformDirection;
 
-	}uniformDirectionLight;
+	};
+	struct directionLightData uniformDirectionLight;
+
 
 	GLuint uniformPointLightCount;
 

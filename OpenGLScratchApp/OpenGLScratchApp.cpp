@@ -35,6 +35,8 @@ GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformViewPos 
 uniformSpecularIntensity = 0, uniformShininess = 0, uniformOmniLightPos = 0, uniformOmniFarPlane = 0, g_GlobalMatricesUBO = 0,
 uniformTessParam = 0, uniformTessHieght = 0, uniformDebugFlag = 0;
 
+GLuint uniformMetallic = 0, uniformRoughness = 0, uniformAO = 0;
+
 UniformBufferObject globalMatrixUBO;
 UniformBufferObject instancingMatrixUBO;
 UniformBufferObject instancingColorUBO;
@@ -51,6 +53,8 @@ Shader distortionShader;
 Shader basicTessellationShader;
 
 Shader basicInstancingShader;
+
+Shader basicPBRShader;
 
 
 Camera camera;
@@ -295,7 +299,6 @@ void CreateShaders()
 
 	basicTessellationShader = Shader();
 	basicTessellationShader.CreateFromFilesWithTess("Shaders/basic_tessellation.vert", "Shaders/basic_tessellation_control.tesscon", "Shaders/basic_tessellation_evaluate.tesseva", "Shaders/basic_tessellation.frag");
-	//basicTessellationShader.CreateFromFiles("Shaders/baisc_tessellation.vert", "Shaders/basic_tessellation.frag");
 	basicTessellationShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
 
 	basicInstancingShader = Shader();
@@ -303,6 +306,10 @@ void CreateShaders()
 	basicInstancingShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
 	basicInstancingShader.bindUniformBlockToBindingPoint("instancingMatrixBlock", INSTANCING_BLOCK_BINDING_POINT_ONE);
 	basicInstancingShader.bindUniformBlockToBindingPoint("instancingColorBlock", INSTANCING_BLOCK_BINDING_POINT_TWO);
+
+	basicPBRShader = Shader();
+	basicPBRShader.CreateFromFiles("Shaders/basic_PBR.vert", "Shaders/basic_PBR.frag");
+	basicPBRShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
 
 	envMapShader = Shader();
 	envMapShader.CreateFromFiles("Shaders/enviroment_map.vert", "Shaders/enviroment_map.frag");
@@ -342,7 +349,7 @@ void RenderScene()
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.0f, 0.0f, 0.0f));//
+	//model = glm::scale(model, glm::vec3(0.0f, 0.0f, 0.0f));//
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	PlainTextrue.UseTextrue();
 	PlainMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
@@ -360,7 +367,7 @@ void RenderScene()
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(3.0f, 0.0f, 0.0f));
 	//model = glm::rotate(model, -90.0f * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.0f, 0.0f, 0.0f));//1.0
+	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));//1.0
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	blackhawk.RenderModel();
@@ -368,7 +375,7 @@ void RenderScene()
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0f));
 	//model = glm::rotate(model, -90.0f * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.0f, 0.0f, 0.0f));//0.3
+	model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));//0.3
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	ThirdOne.RenderModel();
@@ -586,10 +593,43 @@ void InstancingPass()
 
 }
 
+//To DO: Standarlize scene render pass
+void PBRPass()
+{
+	basicPBRShader.UseShader();
+
+	uniformModel = basicPBRShader.GetModelLocation();
+	uniformViewPos = basicPBRShader.GetViewPosLocation();
+
+	glUniform3f(uniformViewPos, camera.getCamPostion().x, camera.getCamPostion().y, camera.getCamPostion().z);
+
+	uniformMetallic = glGetUniformLocation(basicPBRShader.GetShaderID(), "metallic");
+	uniformRoughness = glGetUniformLocation(basicPBRShader.GetShaderID(), "roughness");
+	uniformAO = glGetUniformLocation(basicPBRShader.GetShaderID(), "ao");
+
+	glUniform1f(uniformMetallic, 0.0);
+	glUniform1f(uniformRoughness, 1.0);
+	glUniform1f(uniformAO, 1.0);
+
+//To Do: Make light data in UBO
+	basicPBRShader.setDirectionalLight(&mainLight);
+
+
+	glm::mat4 model(1.0f);
+
+	//TRS
+	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+	
+
+	blackhawk.RenderModel();
+
+}
+
 void RenderPass()
 {
 	shaderList[0].UseShader();
-
+//TO DO: Use materials to query uniform varible need to be full in different shader
 	uniformModel = shaderList[0].GetModelLocation();
 	uniformViewPos = shaderList[0].GetViewPosLocation();
 	uniformSpecularIntensity = shaderList[0].GetSpecularIntensityLocation();
@@ -758,12 +798,12 @@ int main()
 		//reflectionObjPass();
 		//TessellationOp(mainWindow.getsKeys());
 		//TessellationObjectPass(tessParam, tessHeight);
-
-		InstancingPass();
+		PBRPass();
+		//InstancingPass();
 
 		PtoWMat = glm::mat4(glm::inverse(camera.calculateViewMatrix())) * glm::mat4(inversPro);
 		
-		//EnvMapPass(PtoWMat, camera.getCamPostion());
+		EnvMapPass(PtoWMat, camera.getCamPostion());
 
 		glUseProgram(0);
 
