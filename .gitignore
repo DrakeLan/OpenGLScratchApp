@@ -42,3 +42,6 @@ OpenGLScratchApp/Debug/
 .vs/OpenGLScratchApp/v15/
 .vs/OpenGLScratchApp/v16/
 .vs/OpenGLScratchApp/v17/
+*.pdb
+OpenGLScratchApp/Debug/vc142.idb
+*.idb
