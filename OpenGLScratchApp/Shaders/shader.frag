@@ -230,8 +230,5 @@ void main()
 	finalColor += CalcPointLights();	
 	finalColor += CalSpotLights();					    	
 	color = texture(theTexture, TexCoord) * finalColor;
-
-	color = vec4(max(dot(-normalize(directionalLight.direction), normalize(Normal)), 0.0));
-	color = vec4(-normalize(directionalLight.direction), 1.0);
 	
 }

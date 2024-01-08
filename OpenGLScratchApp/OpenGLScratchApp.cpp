@@ -608,7 +608,7 @@ void PBRPass()
 	uniformAO = glGetUniformLocation(basicPBRShader.GetShaderID(), "ao");
 
 	glUniform1f(uniformMetallic, 0.0);
-	glUniform1f(uniformRoughness, 1.0);
+	glUniform1f(uniformRoughness, 0.5);
 	glUniform1f(uniformAO, 1.0);
 
 //To Do: Make light data in UBO

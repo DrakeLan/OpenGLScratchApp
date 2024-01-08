@@ -53,28 +53,7 @@ float DistributionGGX(vec3 N, vec3 H, float roughness)
 }
 
 //BRDF G
-
-float GeometrySchlickGGX(float NdotV, float roughness)
-{
-    float r = (roughness + 1.0);
-    float k = (r*r) / 8.0;
-
-    float num   = NdotV;
-    float denom = NdotV * (1.0 - k) + k;
-	
-    return num / denom;
-}
-float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness)
-{
-    float NdotV = max(dot(N, V), 0.0);
-    float NdotL = max(dot(N, L), 0.0);
-    float ggx2  = GeometrySchlickGGX(NdotV, roughness);
-    float ggx1  = GeometrySchlickGGX(NdotL, roughness);
-	
-    return ggx1 * ggx2;
-}
-
-float GeometrySchlickGGXFunction (float NdotL, float NdotV, float roughness){
+float GeometrySchlickGGX (float NdotL, float NdotV, float roughness){
     float k = roughness / 2;
 
 
@@ -92,7 +71,7 @@ void main()
 	vec3 albedo = vec3(1.0);
 
 	//Base vectors
-	vec3 L = -directionalLight.direction;
+	vec3 L = -normalize(directionalLight.direction);
 	vec3 N = normalize(NormalWS);
 	vec3 V = normalize(viewPosition - PositionWS);
 	vec3 H = normalize(V + L);
@@ -105,7 +84,7 @@ void main()
 	F0 = mix(F0, albedo, metallic);
 	vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
 	float D = DistributionGGX(N, H, roughness);
-	float G = GeometrySchlickGGXFunction(NdotL, NdotV, roughness);
+	float G = GeometrySchlickGGX(NdotL, NdotV, roughness);
 	//float G = GeometrySmith(N, V, L, roughness);  
 
 	vec3 directSpec = (D * F * G) / (4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0)  + 0.0001);
@@ -122,8 +101,6 @@ void main()
 	vec3 ambient = vec3(0.3) * albedo * ao;
 
 	FragColor = vec4(directLight + ambient, 1.0);
-
-	FragColor = vec4(L,1.0);
 
 																	    
 }

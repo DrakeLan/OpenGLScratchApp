@@ -353,6 +353,8 @@ GLuint Shader::GetDebugFlagLocation()
 	return uniformDebugFlag;
 }
 
+
+
 void Shader::setDirectionalLight(DirectionalLight * dLight)
 {
 	dLight->UseLight(uniformDirectionLight.uniformAmbientIntensity, uniformDirectionLight.uniformColor, 
