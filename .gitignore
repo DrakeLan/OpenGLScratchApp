@@ -35,7 +35,7 @@
 *.tlog
 
 #Debug
-Debug\
+Debug/
 
 OpenGLScratchApp/Debug/
 .vs/OpenGLScratchApp/FileContentIndex/
