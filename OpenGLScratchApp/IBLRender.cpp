@@ -17,4 +17,10 @@ void IBLRender::EquirectangularToCube(Textrue EquirectangularTex)
 	envCubeMap->Write();
 	glClear(GL_COLOR_CLEAR_VALUE);
 
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, EquirectangularTex.getTextrueID());
+
+
+
+
 }
