@@ -3,6 +3,7 @@
 #include "Textrue.h"
 #include "IBLTexture.h"
 #include "Shader.h"
+#include "PostRenderHelper.h"
 
 
 class IBLRender
@@ -21,6 +22,7 @@ class IBLRender
 		IBLTexture *irradianceMap;
 		Shader* etangToCubeShader;
 		Shader* convIrradianceShader;
+		PostRenderHelper renderHelper;
 		
 
 
