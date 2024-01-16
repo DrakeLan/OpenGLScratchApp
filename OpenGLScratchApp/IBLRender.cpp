@@ -9,12 +9,16 @@ IBLRender::IBLRender(GLfloat textureWidth, GLfloat textureHeight)
 	envCubeMap = new IBLTexture();
 	envCubeMap->Init(textureWidth, textureHeight);
 
-	renderHelper = new PostRenderHelper();
+	renderHelper = PostRenderHelper();
+
+	equToCubeShader = new Shader();
+	equToCubeShader->CreateFromFilesWithGeo("Shaders/omni_shadow_map.vert", "Shaders/omni_shadow_map.geo", "Shaders/omni_shadow_map.frag");
+
 }
 
 void IBLRender::EquirectangularToCube(Textrue EquirectangularTex)
 {
-	etangToCubeShader->UseShader();
+	equToCubeShader->UseShader();
 
 	envCubeMap->Write();
 	glClear(GL_COLOR_CLEAR_VALUE);
@@ -22,10 +26,11 @@ void IBLRender::EquirectangularToCube(Textrue EquirectangularTex)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, EquirectangularTex.getTextrueID());
 
-	glUniform1i("EquirectangularTexture", 0);
+	uniformEquTexture = glGetUniformLocation(equToCubeShader->GetShaderID(), "equTexture");
+	glUniform1i(uniformEquTexture, 0);
 
 
-	renderHelper->RenderMesh();
+	renderHelper.GetFullquad()->RenderMesh();
 
 
 }

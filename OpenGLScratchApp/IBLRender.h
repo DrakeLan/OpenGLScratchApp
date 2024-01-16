@@ -17,10 +17,15 @@ class IBLRender
 
 		~IBLRender();
 
+	private:
+		GLuint uniformEquTexture;
+		GLuint uniformCubeMap;
+		GLuint uniformIrradianceMap;
+
 	protected:
 		IBLTexture *envCubeMap;
 		IBLTexture *irradianceMap;
-		Shader* etangToCubeShader;
+		Shader* equToCubeShader;
 		Shader* convIrradianceShader;
 		PostRenderHelper renderHelper;
 		

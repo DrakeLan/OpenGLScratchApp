@@ -1,18 +1,21 @@
 #pragma once
 
 #include "Mesh.h"
+#include "Model.h"
 
 class PostRenderHelper
-{
-	PostRenderHelper();
+{	
+	public:
+		PostRenderHelper();
 
-	Mesh* GetFullquad();
+		Mesh* GetFullquad();
+		Model* GetMapCube();
 
-	~PostRenderHelper();
+		~PostRenderHelper();
 
 	protected:
 		Mesh *fullQuad;
-
+		Model* mapCube;
 
 };
 

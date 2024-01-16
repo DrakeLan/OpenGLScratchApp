@@ -22,8 +22,10 @@ PostRenderHelper::PostRenderHelper() {
 	fullQuad = new Mesh();
 	fullQuad->CreateMesh(QuadVertices, QuadIndices, 32, 6);
 
-
+	mapCube = new Model();
+	mapCube->LoadModel("Models/Cube.obj");
 }
+
 Mesh* PostRenderHelper::GetFullquad()
 {
 	if (fullQuad != nullptr)
@@ -34,12 +36,29 @@ Mesh* PostRenderHelper::GetFullquad()
 	{
 		return nullptr;
 	}
-	
+
 }
-;
+
+Model* PostRenderHelper::GetMapCube()
+{
+	if (mapCube != nullptr)
+	{
+		return mapCube;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
 
 PostRenderHelper::~PostRenderHelper()
 {
 	delete fullQuad;
 	fullQuad = nullptr;
+
+	delete mapCube;
+	mapCube = nullptr;
 }
+
+
