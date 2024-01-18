@@ -28,26 +28,29 @@ bool IBLTexture::Init(GLuint width, GLuint height)
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureID, 0);
-
-	glDrawBuffer(GL_NONE);
-	glReadBuffer(GL_NONE);
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 
 	if (status != GL_FRAMEBUFFER_COMPLETE)
 	{
 		printf("Framebuffer Error: %i\n", status);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		return false;
 	}
 
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	return true;
 
 }
 
-void IBLTexture::Write()
+void IBLTexture::BindFBO()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
+}
+
+void IBLTexture::Write(GLuint i)
+{
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, textureID, 0);
 }
 
 void IBLTexture::Read(GLenum textureUnit)

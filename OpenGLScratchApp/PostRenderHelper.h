@@ -8,6 +8,8 @@ class PostRenderHelper
 	public:
 		PostRenderHelper();
 
+		void Init();
+
 		Mesh* GetFullquad();
 		Model* GetMapCube();
 
@@ -15,7 +17,7 @@ class PostRenderHelper
 
 	protected:
 		Mesh *fullQuad;
-		Model* mapCube;
+		Model *mapCube;
 
 };
 

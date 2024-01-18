@@ -24,8 +24,9 @@
 #include "SpotLight.h"
 #include "Material.h"
 #include "UniformBufferObject.h"
-
 #include "Model.h"
+
+#include "IBLRender.h"
 
 // Window dimensions
 const float toRadians = 3.14159265f / 180.0f;
@@ -93,6 +94,8 @@ GLuint shader;
 
 glm::mat4 instancingMatrics[1000];
 glm::vec4 instancingColor[1000];
+
+IBLRender iblRender;
 
 //To do: create a OP class to control, do not create a flag every frame
 bool pressedFlag = false;
@@ -349,7 +352,7 @@ void RenderScene()
 
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(0.0f, -2.0f, 0.0f));
-	//model = glm::scale(model, glm::vec3(0.0f, 0.0f, 0.0f));//
+	model = glm::scale(model, glm::vec3(0.0f, 0.0f, 0.0f));//
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	PlainTextrue.UseTextrue();
 	PlainMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
@@ -367,7 +370,7 @@ void RenderScene()
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(3.0f, 0.0f, 0.0f));
 	//model = glm::rotate(model, -90.0f * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));//1.0
+	model = glm::scale(model, glm::vec3(0.0f, 0.0f, 0.0f));//1.0
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	blackhawk.RenderModel();
@@ -375,7 +378,7 @@ void RenderScene()
 	model = glm::mat4(1.0f);
 	model = glm::translate(model, glm::vec3(-3.0f, -1.0f, 0.0f));
 	//model = glm::rotate(model, -90.0f * toRadians, glm::vec3(1.0f, 0.0f, 0.0f));
-	model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));//0.3
+	model = glm::scale(model, glm::vec3(0.0f, 0.0f, 0.0f));//0.3
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	shinyMaterial.UseMaterial(uniformSpecularIntensity, uniformShininess);
 	ThirdOne.RenderModel();
@@ -764,7 +767,7 @@ int main()
 
 	glm::vec4 testColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-	
+	iblRender = IBLRender(512.0f, 512.0f);
 	
 	//loop until window close
 	while (!mainWindow.getShouldClose())
@@ -798,12 +801,13 @@ int main()
 		//reflectionObjPass();
 		//TessellationOp(mainWindow.getsKeys());
 		//TessellationObjectPass(tessParam, tessHeight);
-		PBRPass();
+		//PBRPass();
 		//InstancingPass();
+		iblRender.EquirectangularToCubePass(brickTextrue);
 
 		PtoWMat = glm::mat4(glm::inverse(camera.calculateViewMatrix())) * glm::mat4(inversPro);
 		
-		EnvMapPass(PtoWMat, camera.getCamPostion());
+		//EnvMapPass(PtoWMat, camera.getCamPostion());
 
 		glUseProgram(0);
 

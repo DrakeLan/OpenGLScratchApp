@@ -8,11 +8,13 @@ class IBLTexture
 public:
 	IBLTexture();
 
-	virtual bool Init(GLuint width, GLuint height);
+	bool Init(GLuint width, GLuint height);
 
-	virtual void Write();
+	void BindFBO();
 
-	virtual void Read(GLenum textureUnit);
+	void Write(GLuint i);
+
+	void Read(GLenum textureUnit);
 
 	GLuint GetTextureWidth() { return textureWidth; }
 	GLuint GetTextureHeight() { return textureHeight; }

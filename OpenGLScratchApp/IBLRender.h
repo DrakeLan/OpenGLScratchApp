@@ -12,8 +12,8 @@ class IBLRender
 		IBLRender();
 		IBLRender(GLfloat textureWidth, GLfloat textureHeight);
 		
-		void EquirectangularToCube(Textrue EquirectangularTex);
-		void RenderIrradianceMap();
+		void EquirectangularToCubePass(Textrue EquirectangularTex);
+		void RenderIrradianceMapPass();
 
 		~IBLRender();
 
@@ -22,6 +22,8 @@ class IBLRender
 		GLuint uniformCubeMap;
 		GLuint uniformIrradianceMap;
 
+		glm::mat4 cubeTransMats[6];
+
 	protected:
 		IBLTexture *envCubeMap;
 		IBLTexture *irradianceMap;
@@ -29,7 +31,7 @@ class IBLRender
 		Shader* convIrradianceShader;
 		PostRenderHelper renderHelper;
 		
-
+		
 
 };
 

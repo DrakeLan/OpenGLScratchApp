@@ -3,6 +3,11 @@
 
 PostRenderHelper::PostRenderHelper() {
 
+
+}
+
+void PostRenderHelper::Init()
+{
 	unsigned int QuadIndices[] =
 	{
 		0, 2, 1,
@@ -24,6 +29,7 @@ PostRenderHelper::PostRenderHelper() {
 
 	mapCube = new Model();
 	mapCube->LoadModel("Models/Cube.obj");
+
 }
 
 Mesh* PostRenderHelper::GetFullquad()
@@ -54,11 +60,18 @@ Model* PostRenderHelper::GetMapCube()
 
 PostRenderHelper::~PostRenderHelper()
 {
-	delete fullQuad;
-	fullQuad = nullptr;
+	/*if (fullQuad)
+	{
+		delete fullQuad;
+		fullQuad = nullptr;
+	}
+	
+	if (mapCube)
+	{
+		delete mapCube;
+		mapCube = nullptr;
+	}*/
 
-	delete mapCube;
-	mapCube = nullptr;
 }
 
 

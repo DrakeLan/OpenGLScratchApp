@@ -6,22 +6,35 @@ IBLRender::IBLRender()
 
 IBLRender::IBLRender(GLfloat textureWidth, GLfloat textureHeight)
 {
-	envCubeMap = new IBLTexture();
-	envCubeMap->Init(textureWidth, textureHeight);
+	for (size_t i = 0; i < 6; i++)
+	{
+		
+	}
+	//envCubeMap = new IBLTexture();
+	//envCubeMap->Init(textureWidth, textureHeight);
 
 	renderHelper = PostRenderHelper();
+	renderHelper.Init();
 
 	equToCubeShader = new Shader();
-	equToCubeShader->CreateFromFilesWithGeo("Shaders/omni_shadow_map.vert", "Shaders/omni_shadow_map.geo", "Shaders/omni_shadow_map.frag");
+	equToCubeShader->CreateFromFiles("Shaders/equ_to_cube.vert", "Shaders/equ_to_cube.frag");
+	equToCubeShader->bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
 
 }
 
-void IBLRender::EquirectangularToCube(Textrue EquirectangularTex)
+void IBLRender::EquirectangularToCubePass(Textrue EquirectangularTex)
 {
-	equToCubeShader->UseShader();
+	/*glm::mat4 model(1.0f);
+	const float toRadians = 3.14159265f / 180.0f;
 
-	envCubeMap->Write();
-	glClear(GL_COLOR_CLEAR_VALUE);
+
+	model = glm::rotate(model, -90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(1.0f, 0.0f, 0.0));
+	
+	
+	
+
+	equToCubeShader->UseShader();
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, EquirectangularTex.getTextrueID());
@@ -29,8 +42,43 @@ void IBLRender::EquirectangularToCube(Textrue EquirectangularTex)
 	uniformEquTexture = glGetUniformLocation(equToCubeShader->GetShaderID(), "equTexture");
 	glUniform1i(uniformEquTexture, 0);
 
+	//envCubeMap->BindFBO();
 
-	renderHelper.GetFullquad()->RenderMesh();
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+		envCubeMap->Write(i);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		//renderHelper.GetFullquad()->RenderMesh();
+	}*/
+
+	for (unsigned int i = 0; i < 6; ++i)
+	{
+
+		glm::mat4 model(1.0f);
+		const float toRadians = 3.14159265f / 180.0f;
 
 
+		model = glm::rotate(model, -90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(1.0f, 0.0f, 0.0));
+
+		equToCubeShader->UseShader();
+
+		glUniformMatrix4fv(equToCubeShader->GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
+
+		renderHelper.GetFullquad()->RenderMesh();
+
+	}
+
+
+
+
+}
+
+void IBLRender::RenderIrradianceMapPass()
+{
+}
+
+IBLRender::~IBLRender()
+{
 }
