@@ -12,7 +12,7 @@ class IBLRender
 		IBLRender();
 		IBLRender(GLfloat textureWidth, GLfloat textureHeight);
 		
-		void EquirectangularToCubePass(Textrue EquirectangularTex);
+		IBLTexture* EquirectangularToCubePass(Textrue EquirectangularTex);
 		void RenderIrradianceMapPass();
 
 		~IBLRender();
@@ -22,7 +22,16 @@ class IBLRender
 		GLuint uniformCubeMap;
 		GLuint uniformIrradianceMap;
 
-		glm::mat4 cubeTransMats[6];
+		GLfloat rotateAngels[6] = { -90.0f, 90.0f, 90.0f, -90.0f, 0.0f, 180.0f };
+
+		glm::vec3 rotateAxis[6] = { glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 1.0, 0.0), glm::vec3(1.0, 0.0, 0.0),
+								  glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0) };
+
+		glm::vec3 translateVectors[6] = { glm::vec3(1.0, 0.0, 0.0), glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0),
+										glm::vec3(0.0, -1.0, 0.0), glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0, 0.0, -1.0) };
+
+
+
 
 	protected:
 		IBLTexture *envCubeMap;

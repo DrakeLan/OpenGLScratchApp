@@ -6,12 +6,9 @@ IBLRender::IBLRender()
 
 IBLRender::IBLRender(GLfloat textureWidth, GLfloat textureHeight)
 {
-	for (size_t i = 0; i < 6; i++)
-	{
-		
-	}
-	//envCubeMap = new IBLTexture();
-	//envCubeMap->Init(textureWidth, textureHeight);
+
+	envCubeMap = new IBLTexture();
+	envCubeMap->Init(textureWidth, textureHeight);
 
 	renderHelper = PostRenderHelper();
 	renderHelper.Init();
@@ -22,35 +19,22 @@ IBLRender::IBLRender(GLfloat textureWidth, GLfloat textureHeight)
 
 }
 
-void IBLRender::EquirectangularToCubePass(Textrue EquirectangularTex)
+IBLTexture* IBLRender::EquirectangularToCubePass(Textrue EquirectangularTex)
 {
-	/*glm::mat4 model(1.0f);
-	const float toRadians = 3.14159265f / 180.0f;
-
-
-	model = glm::rotate(model, -90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::translate(model, glm::vec3(1.0f, 0.0f, 0.0));
 	
 	
-	
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		printf("Framebuffer Error: %i\n", status);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		return NULL;
+	}
 
 	equToCubeShader->UseShader();
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, EquirectangularTex.getTextrueID());
-
-	uniformEquTexture = glGetUniformLocation(equToCubeShader->GetShaderID(), "equTexture");
-	glUniform1i(uniformEquTexture, 0);
-
-	//envCubeMap->BindFBO();
-
-	for (unsigned int i = 0; i < 6; ++i)
-	{
-		envCubeMap->Write(i);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		//renderHelper.GetFullquad()->RenderMesh();
-	}*/
+	envCubeMap->BindFBO();
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	for (unsigned int i = 0; i < 6; ++i)
 	{
@@ -58,11 +42,17 @@ void IBLRender::EquirectangularToCubePass(Textrue EquirectangularTex)
 		glm::mat4 model(1.0f);
 		const float toRadians = 3.14159265f / 180.0f;
 
+		model = glm::translate(model, translateVectors[i]);
+		model = glm::rotate(model, rotateAngels[i] * toRadians, rotateAxis[i]);
 
-		model = glm::rotate(model, -90 * toRadians, glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(1.0f, 0.0f, 0.0));
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envCubeMap->GetTextureID(), 0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		equToCubeShader->UseShader();
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, EquirectangularTex.getTextrueID());
+
+		uniformEquTexture = glGetUniformLocation(equToCubeShader->GetShaderID(), "equTexture");
+		glUniform1i(uniformEquTexture, 0);
 
 		glUniformMatrix4fv(equToCubeShader->GetModelLocation(), 1, GL_FALSE, glm::value_ptr(model));
 
@@ -71,7 +61,9 @@ void IBLRender::EquirectangularToCubePass(Textrue EquirectangularTex)
 	}
 
 
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	return envCubeMap;
 
 }
 

@@ -96,6 +96,7 @@ glm::mat4 instancingMatrics[1000];
 glm::vec4 instancingColor[1000];
 
 IBLRender iblRender;
+IBLTexture *envCubeMap;
 
 //To do: create a OP class to control, do not create a flag every frame
 bool pressedFlag = false;
@@ -478,7 +479,7 @@ void EnvMapPass(glm::mat4 P2WMat, glm::vec3 viewpos)
 
 	glActiveTexture(GL_TEXTURE0);
 	
-	glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMap.getTextrueID());
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap->GetTextureID());
 
 	meshList[3]->RenderMesh();
 
@@ -768,7 +769,9 @@ int main()
 	glm::vec4 testColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
 	iblRender = IBLRender(512.0f, 512.0f);
-	
+	envCubeMap = new IBLTexture();
+	envCubeMap = iblRender.EquirectangularToCubePass(brickTextrue);
+
 	//loop until window close
 	while (!mainWindow.getShouldClose())
 	{
@@ -803,11 +806,11 @@ int main()
 		//TessellationObjectPass(tessParam, tessHeight);
 		//PBRPass();
 		//InstancingPass();
-		iblRender.EquirectangularToCubePass(brickTextrue);
+		
 
 		PtoWMat = glm::mat4(glm::inverse(camera.calculateViewMatrix())) * glm::mat4(inversPro);
 		
-		//EnvMapPass(PtoWMat, camera.getCamPostion());
+		EnvMapPass(PtoWMat, camera.getCamPostion());
 
 		glUseProgram(0);
 

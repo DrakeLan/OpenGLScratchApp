@@ -18,6 +18,7 @@ public:
 
 	GLuint GetTextureWidth() { return textureWidth; }
 	GLuint GetTextureHeight() { return textureHeight; }
+	GLuint GetTextureID() { return textureID; }
 
 
 	~IBLTexture();
