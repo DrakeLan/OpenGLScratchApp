@@ -66,6 +66,7 @@ Textrue PlainTextrue;
 Textrue grassTextrue;
 Textrue heightTextrue;
 Textrue CubeMap;
+Textrue iblRadianceTexture;
 
 
 Material shinyMaterial;
@@ -696,6 +697,8 @@ int main()
 	grassTextrue.LoadTextrueAlpha();
 	heightTextrue = Textrue((char*)("Textures/teapot_disp.png"));
 	heightTextrue.LoadTextrue();
+	iblRadianceTexture = Textrue((char*)("Textures/ibl_hdr_radiance.png"));
+	iblRadianceTexture.LoadTextrue();
 	const char* cubeMapPath[6] = { "Textures/posx.jpg", "Textures/negx.jpg", "Textures/posy.jpg", "Textures/negy.jpg", "Textures/posz.jpg", "Textures/negz.jpg" };
 	CubeMap = Textrue(cubeMapPath);
 	CubeMap.LoadCubeMap();
@@ -770,7 +773,7 @@ int main()
 
 	iblRender = IBLRender(512.0f, 512.0f);
 	envCubeMap = new IBLTexture();
-	envCubeMap = iblRender.EquirectangularToCubePass(brickTextrue);
+	envCubeMap = iblRender.EquirectangularToCubePass(iblRadianceTexture);
 
 	//loop until window close
 	while (!mainWindow.getShouldClose())

@@ -15,5 +15,5 @@ uniform mat4 model;
 void main()
 {
     wPos = (model * vec4(pos, 1.0)).xyz;
-    gl_Position = vec4(pos, 1.0);
+    gl_Position = vec4(pos.xy, 1.0, 1.0);
 }

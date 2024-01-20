@@ -21,5 +21,5 @@ void main()
     vec3 texColor = texture(equTexture, uv).rgb;
 
     color = vec4(texColor, 1.0);
-    color = vec4(1.0, 0.0, 0.0, 1.0);
+    //color = vec4(1.0, 0.0, 0.0, 1.0);
 }
