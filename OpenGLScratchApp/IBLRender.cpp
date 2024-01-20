@@ -69,6 +69,7 @@ IBLTexture* IBLRender::EquirectangularToCubePass(Textrue EquirectangularTex)
 
 void IBLRender::RenderIrradianceMapPass()
 {
+
 }
 
 IBLRender::~IBLRender()
