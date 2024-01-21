@@ -10,14 +10,17 @@ class IBLRender
 {
 	public:
 		IBLRender();
-		IBLRender(GLfloat textureWidth, GLfloat textureHeight);
-		
+		IBLRender(GLfloat cubeWidth, GLfloat cubeHeight, GLfloat irraWidth, GLfloat irraHeight);
+	
 		IBLTexture* EquirectangularToCubePass(Textrue EquirectangularTex);
-		void RenderIrradianceMapPass();
+		IBLTexture* RenderIrradianceMapPass(GLuint envCubeMapID);
+
 
 		~IBLRender();
 
 	private:
+		void CalTransformMatrix();
+
 		GLuint uniformEquTexture;
 		GLuint uniformCubeMap;
 		GLuint uniformIrradianceMap;
@@ -30,7 +33,7 @@ class IBLRender
 		glm::vec3 translateVectors[6] = { glm::vec3(1.0, 0.0, 0.0), glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, -1.0, 0.0),
 										glm::vec3(0.0, 1.0, 0.0), glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 0.0, 1.0) };
 
-
+		glm::mat4 transMatrixs[6];
 
 
 	protected:

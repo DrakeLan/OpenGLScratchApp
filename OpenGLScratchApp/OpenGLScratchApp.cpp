@@ -98,6 +98,7 @@ glm::vec4 instancingColor[1000];
 
 IBLRender iblRender;
 IBLTexture *envCubeMap;
+IBLTexture *irradianceTexture;
 
 //To do: create a OP class to control, do not create a flag every frame
 bool pressedFlag = false;
@@ -480,7 +481,7 @@ void EnvMapPass(glm::mat4 P2WMat, glm::vec3 viewpos)
 
 	glActiveTexture(GL_TEXTURE0);
 	
-	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap->GetTextureID());
+	glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMap.getTextrueID());
 
 	meshList[3]->RenderMesh();
 
@@ -615,6 +616,10 @@ void PBRPass()
 	glUniform1f(uniformMetallic, 0.0);
 	glUniform1f(uniformRoughness, 0.5);
 	glUniform1f(uniformAO, 1.0);
+
+	glActiveTexture(GL_TEXTURE0);
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceTexture->GetTextureID());
 
 //To Do: Make light data in UBO
 	basicPBRShader.setDirectionalLight(&mainLight);
@@ -771,10 +776,12 @@ int main()
 
 	glm::vec4 testColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-	iblRender = IBLRender(512.0f, 512.0f);
+	iblRender = IBLRender(512.0f, 512.0f, 32.0f, 32.0f);
 	envCubeMap = new IBLTexture();
 	envCubeMap = iblRender.EquirectangularToCubePass(iblRadianceTexture);
-
+	irradianceTexture = new IBLTexture();
+	irradianceTexture = iblRender.RenderIrradianceMapPass(CubeMap.getTextrueID());
+	
 	//loop until window close
 	while (!mainWindow.getShouldClose())
 	{
@@ -807,7 +814,7 @@ int main()
 		//reflectionObjPass();
 		//TessellationOp(mainWindow.getsKeys());
 		//TessellationObjectPass(tessParam, tessHeight);
-		//PBRPass();
+		PBRPass();
 		//InstancingPass();
 		
 

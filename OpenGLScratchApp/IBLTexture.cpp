@@ -41,7 +41,7 @@ bool IBLTexture::Init(GLuint width, GLuint height)
 
 void IBLTexture::BindFBO()
 {
-	glViewport(0, 0, 512, 512);
+	glViewport(0, 0, textureWidth, textureHeight);
 	glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 	
 }

@@ -29,6 +29,8 @@ uniform float ao;
 
 uniform DirectionalLight directionalLight;
 
+uniform samplerCube irradianceMap;
+
 const float PI = 3.14159265359;
 
 //BRDF F
@@ -36,6 +38,11 @@ vec3 fresnelSchlick(float cosTheta, vec3 F0)
 {
     return F0 + (1.0 - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
 }  
+
+vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
+{
+    return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(clamp(1.0 - cosTheta, 0.0, 1.0), 5.0);
+}   
 
 //BRDF D
 float DistributionGGX(vec3 N, vec3 H, float roughness)
@@ -95,10 +102,15 @@ void main()
 
 	kD *= 1.0 - metallic;
 
-	//Final Result
+	//Direct Final Result
 	vec3 directLight = (kD * albedo/PI + directSpec) * directionalLight.base.color * NdotL;
 
-	vec3 ambient = vec3(0.3) * albedo * ao;
+	//Indrect Diffuse
+	vec3 idkS = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+	vec3 idkD = 1.0 - idkS;
+	vec3 irradiance = texture(irradianceMap, N).rgb;
+	vec3 diffuse    = irradiance * albedo;
+	vec3 ambient    = (idkD * diffuse) * ao; 
 
 	FragColor = vec4(directLight + ambient, 1.0);
 
