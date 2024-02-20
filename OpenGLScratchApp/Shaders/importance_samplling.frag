@@ -50,7 +50,7 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 
 void main()
 {
-    vec3 N = normalize(wPos);    
+    vec3 N = -normalize(wPos);    
     vec3 R = N;
     vec3 V = R;
 
@@ -73,5 +73,6 @@ void main()
     prefilteredColor = prefilteredColor / totalWeight;
 
     color = vec4(prefilteredColor, 1.0);
+    color.xyz = N;
 
 }

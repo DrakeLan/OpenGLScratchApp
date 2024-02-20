@@ -114,5 +114,7 @@ void main()
 
 	FragColor = vec4(directLight + ambient, 1.0);
 
+	FragColor.xyz = PositionWS;
+
 																	    
 }

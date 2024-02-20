@@ -782,9 +782,9 @@ int main()
 	envCubeMap = new IBLTexture();
 	envCubeMap = iblRender.EquirectangularToCubePass(iblRadianceTexture);
 	irradianceTexture = new IBLTexture();
-	irradianceTexture = iblRender.RenderIrradianceMapPass(CubeMap.getTextrueID());
+	irradianceTexture = iblRender.RenderIrradianceMapPass(envCubeMap->GetTextureID());
 	importanceSampleTexture = new IBLTexture();
-	importanceSampleTexture = iblRender.ImportanceSamplePass(CubeMap.getTextrueID());
+	importanceSampleTexture = iblRender.ImportanceSamplePass(envCubeMap->GetTextureID());
 	
 	//loop until window close
 	while (!mainWindow.getShouldClose())
