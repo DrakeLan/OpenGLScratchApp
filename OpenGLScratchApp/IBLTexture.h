@@ -8,11 +8,11 @@ class IBLTexture
 public:
 	IBLTexture();
 
-	bool Init(GLuint width, GLuint height);
+	bool Init(GLuint width, GLuint height, bool mipFlag = false);
 
 	void BindFBO();
 
-	void Write(GLuint i);
+	void Write(GLuint i, GLuint mip = 0);
 
 	void Read(GLenum textureUnit);
 

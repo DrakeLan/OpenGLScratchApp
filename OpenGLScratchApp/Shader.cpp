@@ -432,6 +432,20 @@ void Shader::SetOmniLightMatrices(std::vector<glm::mat4>lightMatrices)
 	}
 }
 
+void Shader::SetFloat(const char* propertyName, GLfloat value)
+{
+	GLint uniformFloat = glGetUniformLocation(shaderID, propertyName);
+	if (uniformFloat == -1)
+	{
+		printf(shaderID + "  doesn't contain property %s", propertyName);
+	}
+	else
+	{
+		glUniform1f(uniformFloat, value);
+	}
+	
+}
+
 void Shader::bindUniformBlockToBindingPoint(const std::string& uniformBlockName, const GLuint bindingPoint)
 {
 	const auto blockIndex = glGetUniformBlockIndex(shaderID, uniformBlockName.c_str());

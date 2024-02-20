@@ -27,6 +27,7 @@ public:
 
 	std::string ReadFile(const char* fileLocation);
 
+	//To Do: Simplify in Getxxx() function
 	GLuint GetShaderID();
 	GLuint GetProjectionLocation();
 	GLuint GetModelLocation();
@@ -44,6 +45,7 @@ public:
 	GLuint GetTessHeightLocation();
 	GLuint GetDebugFlagLocation();
 
+	//To Do: Simplify in Setxxx() function
 	void setDirectionalLight(DirectionalLight * dLight);
 	void setPointLights(PointLight * pLight, unsigned int lightCount, unsigned int textureUnit, unsigned int offset);
 	void setSpotLights(SpotLight * sLight, unsigned int lightCount, unsigned int textureUnit, unsigned int offset);
@@ -53,6 +55,9 @@ public:
 	void SetPtoWTransform(glm::mat4* p2wTransform);
 	void SetViewPostion(glm::vec3* viewPos);
 	void SetOmniLightMatrices(std::vector<glm::mat4>lightMatrices);
+
+	//General set function
+	void SetFloat(const char* propertyName, GLfloat value);
 
 	void bindUniformBlockToBindingPoint(const std::string& uniformBlockName, const GLuint bindingPoint);
 

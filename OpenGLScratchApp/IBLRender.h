@@ -14,6 +14,7 @@ class IBLRender
 	
 		IBLTexture* EquirectangularToCubePass(Textrue EquirectangularTex);
 		IBLTexture* RenderIrradianceMapPass(GLuint envCubeMapID);
+		IBLTexture* ImportanceSamplePass(GLuint envCubeMapID);
 
 
 		~IBLRender();
@@ -39,8 +40,10 @@ class IBLRender
 	protected:
 		IBLTexture *envCubeMap;
 		IBLTexture *irradianceMap;
+		IBLTexture *importanceSampleMap;
 		Shader* equToCubeShader;
 		Shader* convIrradianceShader;
+		Shader* importanceSampleShader;
 		PostRenderHelper renderHelper;
 		
 		

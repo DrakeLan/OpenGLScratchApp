@@ -99,6 +99,7 @@ glm::vec4 instancingColor[1000];
 IBLRender iblRender;
 IBLTexture *envCubeMap;
 IBLTexture *irradianceTexture;
+IBLTexture* importanceSampleTexture;
 
 //To do: create a OP class to control, do not create a flag every frame
 bool pressedFlag = false;
@@ -475,13 +476,14 @@ void TessellationOp(bool* keys)
 
 void EnvMapPass(glm::mat4 P2WMat, glm::vec3 viewpos)
 {
+	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	envMapShader.UseShader();
 	envMapShader.SetPtoWTransform(&P2WMat);
 	envMapShader.SetViewPostion(&viewpos);
 
 	glActiveTexture(GL_TEXTURE0);
 	
-	glBindTexture(GL_TEXTURE_CUBE_MAP, CubeMap.getTextrueID());
+	glBindTexture(GL_TEXTURE_CUBE_MAP, importanceSampleTexture->GetTextureID());
 
 	meshList[3]->RenderMesh();
 
@@ -781,6 +783,8 @@ int main()
 	envCubeMap = iblRender.EquirectangularToCubePass(iblRadianceTexture);
 	irradianceTexture = new IBLTexture();
 	irradianceTexture = iblRender.RenderIrradianceMapPass(CubeMap.getTextrueID());
+	importanceSampleTexture = new IBLTexture();
+	importanceSampleTexture = iblRender.ImportanceSamplePass(CubeMap.getTextrueID());
 	
 	//loop until window close
 	while (!mainWindow.getShouldClose())

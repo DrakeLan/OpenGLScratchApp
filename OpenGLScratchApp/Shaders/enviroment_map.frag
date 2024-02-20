@@ -12,7 +12,7 @@ uniform sampler2D baseTex;
 void main()																	
 {	
 					    	
-	color = texture(envTexture, dir);
+	color = textureLod(envTexture, dir, 0);
 	//color = vec4(1.0, 0.0, 0.0, 1.0); 
 																	    
 }

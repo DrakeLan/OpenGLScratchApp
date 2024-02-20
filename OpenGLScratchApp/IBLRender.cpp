@@ -14,6 +14,9 @@ IBLRender::IBLRender(GLfloat cubeWidth, GLfloat cubeHeight, GLfloat irraWidth, G
 	irradianceMap = new IBLTexture();
 	irradianceMap->Init(irraWidth, irraHeight);
 
+	importanceSampleMap = new IBLTexture();
+	importanceSampleMap->Init(irraWidth, irraHeight, true);
+
 	renderHelper = PostRenderHelper();
 	renderHelper.Init();
 
@@ -22,6 +25,9 @@ IBLRender::IBLRender(GLfloat cubeWidth, GLfloat cubeHeight, GLfloat irraWidth, G
 
 	convIrradianceShader = new Shader();
 	convIrradianceShader->CreateFromFiles("Shaders/conv_to_irradiance.vert", "Shaders/conv_to_irradiance.frag");
+
+	importanceSampleShader = new Shader();
+	importanceSampleShader->CreateFromFiles("Shaders/importance_samplling.vert", "Shaders/importance_samplling.frag");
 
 }
 
@@ -87,19 +93,19 @@ IBLTexture* IBLRender::RenderIrradianceMapPass(GLuint envCubeMapID)
 	GLenum status;
 
 	convIrradianceShader->UseShader();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMapID);
+
+	uniformCubeMap = glGetUniformLocation(convIrradianceShader->GetShaderID(), "envCubeMap");
+	glUniform1i(uniformCubeMap, 0);
 
 	irradianceMap->BindFBO();
+
 
 	for (unsigned int i = 0; i < 6; ++i)
 	{
 		irradianceMap->Write(i);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMapID);
-
-		uniformCubeMap = glGetUniformLocation(convIrradianceShader->GetShaderID(), "envCubeMap");
-		glUniform1i(uniformCubeMap, 0);
 
 		glUniformMatrix4fv(convIrradianceShader->GetModelLocation(), 1, GL_FALSE, glm::value_ptr(transMatrixs[i]));
 
@@ -117,6 +123,45 @@ IBLTexture* IBLRender::RenderIrradianceMapPass(GLuint envCubeMapID)
 
 	return irradianceMap;
 }
+
+IBLTexture* IBLRender::ImportanceSamplePass(GLuint envCubeMapID)
+{
+	importanceSampleShader->UseShader();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMapID);
+
+	uniformCubeMap = glGetUniformLocation(convIrradianceShader->GetShaderID(), "envCubeMap");
+	glUniform1i(uniformCubeMap, 0);
+
+	importanceSampleMap->BindFBO();
+
+	unsigned int maxMipLevels = 5;
+
+	for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
+	{
+		// reisze framebuffer according to mip-level size.
+		unsigned int mipWidth = 128 * std::pow(0.5, mip);
+		unsigned int mipHeight = 128 * std::pow(0.5, mip);
+		//glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
+		//glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+		glViewport(0, 0, mipWidth, mipHeight);
+
+		float roughness = (float)mip / (float)(maxMipLevels - 1);
+		importanceSampleShader->SetFloat("roughness", roughness);
+		for (unsigned int i = 0; i < 6; ++i)
+		{
+			glUniformMatrix4fv(importanceSampleShader->GetModelLocation(), 1, GL_FALSE, glm::value_ptr(transMatrixs[i]));
+			importanceSampleMap->Write(i, mip);
+
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			renderHelper.GetFullquad()->RenderMesh();
+		}
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return importanceSampleMap;
+}
+
 
 
 
