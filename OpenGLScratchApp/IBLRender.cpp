@@ -129,6 +129,9 @@ IBLTexture* IBLRender::ImportanceSamplePass(GLuint envCubeMapID)
 	importanceSampleShader->UseShader();
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMapID);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
 
 	uniformCubeMap = glGetUniformLocation(convIrradianceShader->GetShaderID(), "envCubeMap");
 	glUniform1i(uniformCubeMap, 0);
