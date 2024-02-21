@@ -446,6 +446,19 @@ void Shader::SetFloat(const char* propertyName, GLfloat value)
 	
 }
 
+void Shader::SetTexture(const char* textureName, GLuint value)
+{
+	GLint uniformTexture = glGetUniformLocation(shaderID, textureName);
+	if (uniformTexture == -1)
+	{
+		printf(shaderID + "  doesn't contain property %s", textureName);
+	}
+	else
+	{
+		glUniform1i(uniformTexture, value);
+	}
+}
+
 void Shader::bindUniformBlockToBindingPoint(const std::string& uniformBlockName, const GLuint bindingPoint)
 {
 	const auto blockIndex = glGetUniformBlockIndex(shaderID, uniformBlockName.c_str());

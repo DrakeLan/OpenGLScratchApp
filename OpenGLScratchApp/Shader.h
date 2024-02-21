@@ -58,6 +58,7 @@ public:
 
 	//General set function
 	void SetFloat(const char* propertyName, GLfloat value);
+	void SetTexture(const char* textureName, GLuint value);
 
 	void bindUniformBlockToBindingPoint(const std::string& uniformBlockName, const GLuint bindingPoint);
 

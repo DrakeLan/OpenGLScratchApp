@@ -30,6 +30,8 @@ uniform float ao;
 uniform DirectionalLight directionalLight;
 
 uniform samplerCube irradianceMap;
+uniform samplerCube importanceSampleMap;
+uniform sampler2D BRDF_LUT;
 
 const float PI = 3.14159265359;
 
@@ -105,12 +107,24 @@ void main()
 	//Direct Final Result
 	vec3 directLight = (kD * albedo/PI + directSpec) * directionalLight.base.color * NdotL;
 
-	//Indrect Diffuse
+	//Indrect Specular
 	vec3 idkS = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+
+	vec3 R = reflect(-V, N);
+	const float MAX_REFLECTION_LOD = 4.0;
+	vec3 importanceReflection = textureLod(importanceSampleMap, R, roughness * MAX_REFLECTION_LOD).rgb;
+	vec2 envBRDF = texture(BRDF_LUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
+	vec3 specular = importanceReflection * ( idkS * envBRDF.x + envBRDF.y);
+
+	//Indrect Diffuse
 	vec3 idkD = 1.0 - idkS;
+
 	vec3 irradiance = texture(irradianceMap, N).rgb;
 	vec3 diffuse    = irradiance * albedo;
-	vec3 ambient    = (idkD * diffuse) * ao; 
+
+
+	//Indirect Final Result
+	vec3 ambient    = (idkD * diffuse + specular) * ao; 
 
 	FragColor = vec4(directLight + ambient, 1.0);
 

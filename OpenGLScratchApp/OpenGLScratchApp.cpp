@@ -67,6 +67,7 @@ Textrue grassTextrue;
 Textrue heightTextrue;
 Textrue CubeMap;
 Textrue iblRadianceTexture;
+Textrue brdf_LUT;
 
 
 Material shinyMaterial;
@@ -620,8 +621,16 @@ void PBRPass()
 	glUniform1f(uniformAO, 1.0);
 
 	glActiveTexture(GL_TEXTURE0);
-
 	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceTexture->GetTextureID());
+	basicPBRShader.SetTexture("irradianceMap", 0);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, importanceSampleTexture->GetTextureID());
+	basicPBRShader.SetTexture("importanceSampleMap", 1);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, brdf_LUT.getTextrueID());
+	basicPBRShader.SetTexture("BRDF_LUT", 2);
 
 //To Do: Make light data in UBO
 	basicPBRShader.setDirectionalLight(&mainLight);
@@ -678,15 +687,12 @@ int main()
 	mainWindow = Window(1366, 768);
 	mainWindow.Initialise();
 
-
 	CreateObjects();
 	createEnvPlane();
 
 	CreateGlobalMatrixUBO();
-	
 
 	CreateInstancingUBO(1000);
-
 
 	CreateShaders();
 
@@ -706,6 +712,8 @@ int main()
 	heightTextrue.LoadTextrue();
 	iblRadianceTexture = Textrue((char*)("Textures/ibl_hdr_radiance.png"));
 	iblRadianceTexture.LoadTextrue();
+	brdf_LUT = Textrue((char*)("Textures/ibl_brdf_lut.png"));
+	brdf_LUT.LoadTextrue();
 	const char* cubeMapPath[6] = { "Textures/posx.jpg", "Textures/negx.jpg", "Textures/posy.jpg", "Textures/negy.jpg", "Textures/posz.jpg", "Textures/negz.jpg" };
 	CubeMap = Textrue(cubeMapPath);
 	CubeMap.LoadCubeMap();
@@ -777,6 +785,8 @@ int main()
 	glm::mat4 PtoWMat = glm::mat4(inversPro);
 
 	glm::vec4 testColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
+
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	iblRender = IBLRender(512.0f, 512.0f, 32.0f, 32.0f);
 	envCubeMap = new IBLTexture();
