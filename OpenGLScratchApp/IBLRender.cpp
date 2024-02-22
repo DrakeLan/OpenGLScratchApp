@@ -9,13 +9,16 @@ IBLRender::IBLRender(GLfloat cubeWidth, GLfloat cubeHeight, GLfloat irraWidth, G
 	CalTransformMatrix();
 
 	envCubeMap = new IBLTexture();
-	envCubeMap->Init(cubeWidth, cubeHeight);
+	envCubeMap->InitCube(cubeWidth, cubeHeight);
 
 	irradianceMap = new IBLTexture();
-	irradianceMap->Init(irraWidth, irraHeight);
+	irradianceMap->InitCube(irraWidth, irraHeight);
 
 	importanceSampleMap = new IBLTexture();
-	importanceSampleMap->Init(irraWidth, irraHeight, true);
+	importanceSampleMap->InitCube(irraWidth * 4, irraHeight * 4, true);
+
+	brdfLUTMap = new IBLTexture();
+	brdfLUTMap->InitLUT(512, 512);
 
 	renderHelper = PostRenderHelper();
 	renderHelper.Init();
@@ -165,6 +168,14 @@ IBLTexture* IBLRender::ImportanceSamplePass(GLuint envCubeMapID)
 	return importanceSampleMap;
 }
 
+
+IBLTexture* IBLRender::BRDFPreComputePass()
+{
+	brdfPreComputeShader->UseShader();
+
+	return brdfLUTMap;
+
+}
 
 
 

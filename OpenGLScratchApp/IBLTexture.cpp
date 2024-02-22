@@ -8,7 +8,7 @@ IBLTexture::IBLTexture()
     textureWidth = 0.0f;
 }
 
-bool IBLTexture::Init(GLuint width, GLuint height, bool mipFlag)
+bool IBLTexture::InitCube(GLuint width, GLuint height, bool mipFlag)
 {
 	textureHeight = height;
 	textureWidth = width;
@@ -40,14 +40,32 @@ bool IBLTexture::Init(GLuint width, GLuint height, bool mipFlag)
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	}
-	
-	
-
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return true;
 
+}
+
+bool IBLTexture::InitLUT(GLuint width, GLuint height)
+{
+	textureHeight = height;
+	textureWidth = width;
+
+	glGenFramebuffers(1, &FBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, FBO);
+
+	glGenTextures(1, &textureID);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, textureHeight, textureWidth, 0, GL_RG, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return true;
 }
 
 void IBLTexture::BindFBO()

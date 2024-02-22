@@ -78,6 +78,7 @@ float GeometrySchlickGGX (float NdotL, float NdotV, float roughness){
 void main()																	
 {	
 	vec3 albedo = vec3(1.0);
+	float safeRoughness = max(0.045, roughness);
 
 	//Base vectors
 	vec3 L = -normalize(directionalLight.direction);
@@ -92,8 +93,8 @@ void main()
 	vec3 F0 = vec3(0.04);
 	F0 = mix(F0, albedo, metallic);
 	vec3 F = fresnelSchlick(max(dot(H, V), 0.0), F0);
-	float D = DistributionGGX(N, H, roughness);
-	float G = GeometrySchlickGGX(NdotL, NdotV, roughness);
+	float D = DistributionGGX(N, H, safeRoughness);
+	float G = GeometrySchlickGGX(NdotL, NdotV, safeRoughness);
 	//float G = GeometrySmith(N, V, L, roughness);  
 
 	vec3 directSpec = (D * F * G) / (4.0 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0)  + 0.0001);
@@ -108,12 +109,12 @@ void main()
 	vec3 directLight = (kD * albedo/PI + directSpec) * directionalLight.base.color * NdotL;
 
 	//Indrect Specular
-	vec3 idkS = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, roughness);
+	vec3 idkS = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, safeRoughness);
 
 	vec3 R = reflect(-V, N);
 	const float MAX_REFLECTION_LOD = 4.0;
-	vec3 importanceReflection = textureLod(importanceSampleMap, R, roughness * MAX_REFLECTION_LOD).rgb;
-	vec2 envBRDF = texture(BRDF_LUT, vec2(max(dot(N, V), 0.0), roughness)).rg;
+	vec3 importanceReflection = textureLod(importanceSampleMap, R, safeRoughness * MAX_REFLECTION_LOD).rgb;
+	vec2 envBRDF = texture(BRDF_LUT, vec2(max(dot(N, V), 0.0), safeRoughness)).rg;
 	vec3 specular = importanceReflection * ( idkS * envBRDF.x + envBRDF.y);
 
 	//Indrect Diffuse
@@ -124,9 +125,8 @@ void main()
 
 
 	//Indirect Final Result
-	vec3 ambient    = (idkD * diffuse + specular) * ao; 
+	vec3 ambient  = (idkD * diffuse + specular) * ao; 
 
 	FragColor = vec4(directLight + ambient, 1.0);
-
 																	    
 }

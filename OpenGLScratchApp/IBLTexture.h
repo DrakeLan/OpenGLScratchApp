@@ -8,7 +8,8 @@ class IBLTexture
 public:
 	IBLTexture();
 
-	bool Init(GLuint width, GLuint height, bool mipFlag = false);
+	bool InitCube(GLuint width, GLuint height, bool mipFlag = false);
+	bool InitLUT(GLuint width, GLuint height);
 
 	void BindFBO();
 

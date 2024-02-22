@@ -484,7 +484,7 @@ void EnvMapPass(glm::mat4 P2WMat, glm::vec3 viewpos)
 
 	glActiveTexture(GL_TEXTURE0);
 	
-	glBindTexture(GL_TEXTURE_CUBE_MAP, importanceSampleTexture->GetTextureID());
+	glBindTexture(GL_TEXTURE_CUBE_MAP, envCubeMap->GetTextureID());
 
 	meshList[3]->RenderMesh();
 
@@ -616,7 +616,7 @@ void PBRPass()
 	uniformRoughness = glGetUniformLocation(basicPBRShader.GetShaderID(), "roughness");
 	uniformAO = glGetUniformLocation(basicPBRShader.GetShaderID(), "ao");
 
-	glUniform1f(uniformMetallic, 0.0);
+	glUniform1f(uniformMetallic, 1.0);
 	glUniform1f(uniformRoughness, 0.5);
 	glUniform1f(uniformAO, 1.0);
 
@@ -630,6 +630,8 @@ void PBRPass()
 
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, brdf_LUT.getTextrueID());
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	basicPBRShader.SetTexture("BRDF_LUT", 2);
 
 //To Do: Make light data in UBO
@@ -713,7 +715,7 @@ int main()
 	iblRadianceTexture = Textrue((char*)("Textures/ibl_hdr_radiance.png"));
 	iblRadianceTexture.LoadTextrue();
 	brdf_LUT = Textrue((char*)("Textures/ibl_brdf_lut.png"));
-	brdf_LUT.LoadTextrue();
+	brdf_LUT.LoadLUTMap();
 	const char* cubeMapPath[6] = { "Textures/posx.jpg", "Textures/negx.jpg", "Textures/posy.jpg", "Textures/negy.jpg", "Textures/posz.jpg", "Textures/negz.jpg" };
 	CubeMap = Textrue(cubeMapPath);
 	CubeMap.LoadCubeMap();

@@ -14,6 +14,7 @@ public:
 	bool LoadTextrue();
 	bool LoadTextrueAlpha();
 	bool LoadCubeMap();
+	bool LoadLUTMap();
 
 	void UseTextrue();
 	void UseCubeMap();

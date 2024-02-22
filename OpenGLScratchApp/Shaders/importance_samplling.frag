@@ -64,7 +64,7 @@ float DistributionGGX(float NdotH, float roughness)
 
 void main()
 {
-    vec3 N = normalize(wPos);    
+    vec3 N = -normalize(wPos);    
     vec3 R = N;
     vec3 V = R;
 
