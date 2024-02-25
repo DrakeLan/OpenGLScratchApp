@@ -67,7 +67,6 @@ Textrue grassTextrue;
 Textrue heightTextrue;
 Textrue CubeMap;
 Textrue iblRadianceTexture;
-Textrue brdf_LUT;
 
 
 Material shinyMaterial;
@@ -100,7 +99,8 @@ glm::vec4 instancingColor[1000];
 IBLRender iblRender;
 IBLTexture *envCubeMap;
 IBLTexture *irradianceTexture;
-IBLTexture* importanceSampleTexture;
+IBLTexture *importanceSampleTexture;
+IBLTexture *brdfPreComputeMap;
 
 //To do: create a OP class to control, do not create a flag every frame
 bool pressedFlag = false;
@@ -617,7 +617,7 @@ void PBRPass()
 	uniformAO = glGetUniformLocation(basicPBRShader.GetShaderID(), "ao");
 
 	glUniform1f(uniformMetallic, 1.0);
-	glUniform1f(uniformRoughness, 0.5);
+	glUniform1f(uniformRoughness, 0.0);
 	glUniform1f(uniformAO, 1.0);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -629,9 +629,7 @@ void PBRPass()
 	basicPBRShader.SetTexture("importanceSampleMap", 1);
 
 	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, brdf_LUT.getTextrueID());
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glBindTexture(GL_TEXTURE_2D, brdfPreComputeMap->GetTextureID());
 	basicPBRShader.SetTexture("BRDF_LUT", 2);
 
 //To Do: Make light data in UBO
@@ -644,7 +642,7 @@ void PBRPass()
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	
-
+	//meshList[2]->RenderMesh();
 	blackhawk.RenderModel();
 
 }
@@ -714,8 +712,6 @@ int main()
 	heightTextrue.LoadTextrue();
 	iblRadianceTexture = Textrue((char*)("Textures/ibl_hdr_radiance.png"));
 	iblRadianceTexture.LoadTextrue();
-	brdf_LUT = Textrue((char*)("Textures/ibl_brdf_lut.png"));
-	brdf_LUT.LoadLUTMap();
 	const char* cubeMapPath[6] = { "Textures/posx.jpg", "Textures/negx.jpg", "Textures/posy.jpg", "Textures/negy.jpg", "Textures/posz.jpg", "Textures/negz.jpg" };
 	CubeMap = Textrue(cubeMapPath);
 	CubeMap.LoadCubeMap();
@@ -797,6 +793,8 @@ int main()
 	irradianceTexture = iblRender.RenderIrradianceMapPass(envCubeMap->GetTextureID());
 	importanceSampleTexture = new IBLTexture();
 	importanceSampleTexture = iblRender.ImportanceSamplePass(envCubeMap->GetTextureID());
+	brdfPreComputeMap = new IBLTexture();
+	brdfPreComputeMap = iblRender.BRDFPreComputePass();
 	
 	//loop until window close
 	while (!mainWindow.getShouldClose())

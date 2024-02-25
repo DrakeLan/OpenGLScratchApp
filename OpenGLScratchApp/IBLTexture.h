@@ -13,6 +13,8 @@ public:
 
 	void BindFBO();
 
+	void Write();
+
 	void Write(GLuint i, GLuint mip = 0);
 
 	void Read(GLenum textureUnit);

@@ -75,6 +75,11 @@ void IBLTexture::BindFBO()
 	
 }
 
+void IBLTexture::Write()
+{
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureID, 0);
+}
+
 void IBLTexture::Write(GLuint i, GLuint mip)
 {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, textureID, mip);

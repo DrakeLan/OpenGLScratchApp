@@ -153,33 +153,6 @@ bool Textrue::LoadCubeMap()
 
 }
 
-bool Textrue::LoadLUTMap()
-{
-	unsigned char* texData = stbi_load(fileLocation, &width, &height, &bitDepth, 0);
-
-	if (!texData)
-	{
-		printf("Filed to find: %s\n", fileLocation);
-		return false;
-	}
-
-	glGenTextures(1, &textrueID);
-	glBindTexture(GL_TEXTURE_2D, textrueID);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texData);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	stbi_image_free(texData);
-
-	return true;
-}
-
 
 void Textrue::UseTextrue()
 {

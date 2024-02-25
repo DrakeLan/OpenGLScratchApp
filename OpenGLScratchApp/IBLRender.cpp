@@ -32,6 +32,8 @@ IBLRender::IBLRender(GLfloat cubeWidth, GLfloat cubeHeight, GLfloat irraWidth, G
 	importanceSampleShader = new Shader();
 	importanceSampleShader->CreateFromFiles("Shaders/importance_samplling.vert", "Shaders/importance_samplling.frag");
 
+	brdfPreComputeShader = new Shader();
+	brdfPreComputeShader->CreateFromFiles("Shaders/brdf_precompute.vert", "Shaders/brdf_precompute.frag");
 }
 
 void IBLRender::CalTransformMatrix()
@@ -172,6 +174,11 @@ IBLTexture* IBLRender::ImportanceSamplePass(GLuint envCubeMapID)
 IBLTexture* IBLRender::BRDFPreComputePass()
 {
 	brdfPreComputeShader->UseShader();
+	brdfLUTMap->BindFBO();
+	brdfLUTMap->Write();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	renderHelper.GetFullquad()->RenderMesh();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	return brdfLUTMap;
 
