@@ -32,7 +32,7 @@
 const float toRadians = 3.14159265f / 180.0f;
 
 
-GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0, uniformViewPos = 0,
+GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0,
 uniformSpecularIntensity = 0, uniformShininess = 0, uniformOmniLightPos = 0, uniformOmniFarPlane = 0, g_GlobalMatricesUBO = 0,
 uniformTessParam = 0, uniformTessHieght = 0, uniformDebugFlag = 0;
 
@@ -479,8 +479,8 @@ void EnvMapPass(glm::mat4 P2WMat, glm::vec3 viewpos)
 {
 	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	envMapShader.UseShader();
-	envMapShader.SetPtoWTransform(&P2WMat);
-	envMapShader.SetViewPostion(&viewpos);
+	envMapShader.SetMatrix("PToWTransform", &P2WMat);
+	envMapShader.SetVectorThree("viewPosition", &viewpos);
 
 	glActiveTexture(GL_TEXTURE0);
 	
@@ -530,19 +530,16 @@ void OmniShadowMapPass(PointLight* light)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void reflectionObjPass()
+void reflectionObjPass(glm::vec3 camPos)
 {
 	glm::mat4 model(1.0f);
 
 	reflectionShader.UseShader();
 
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-
 	uniformModel = reflectionShader.GetModelLocation();
-	uniformViewPos = reflectionShader.GetViewPosLocation();
-
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	glUniform3f(uniformViewPos, camera.getCamPostion().x, camera.getCamPostion().y, camera.getCamPostion().z);
+	reflectionShader.SetVectorThree("viewPosition", &camPos);
 
 	CubeMap.UseCubeMap();
 
@@ -551,10 +548,8 @@ void reflectionObjPass()
 	distortionShader.UseShader();
 	model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
 	uniformModel = distortionShader.GetModelLocation();
-	uniformViewPos = distortionShader.GetViewPosLocation();
-
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	glUniform3f(uniformViewPos, camera.getCamPostion().x, camera.getCamPostion().y, camera.getCamPostion().z);
+	distortionShader.SetVectorThree("viewPosition", &camPos);
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	meshList[2]->RenderMesh();
 
@@ -603,14 +598,13 @@ void InstancingPass()
 }
 
 //To DO: Standarlize scene render pass
-void PBRPass()
+void PBRPass(glm::vec3 camPos)
 {
 	basicPBRShader.UseShader();
 
 	uniformModel = basicPBRShader.GetModelLocation();
-	uniformViewPos = basicPBRShader.GetViewPosLocation();
-
-	glUniform3f(uniformViewPos, camera.getCamPostion().x, camera.getCamPostion().y, camera.getCamPostion().z);
+	
+	basicPBRShader.SetVectorThree("viewPosition", &camPos);
 
 	uniformMetallic = glGetUniformLocation(basicPBRShader.GetShaderID(), "metallic");
 	uniformRoughness = glGetUniformLocation(basicPBRShader.GetShaderID(), "roughness");
@@ -647,12 +641,11 @@ void PBRPass()
 
 }
 
-void RenderPass()
+void RenderPass(glm::vec3 camPos)
 {
 	shaderList[0].UseShader();
-//TO DO: Use materials to query uniform varible need to be full in different shader
+	//TO DO: Use materials to query uniform varible need to be full in different shader
 	uniformModel = shaderList[0].GetModelLocation();
-	uniformViewPos = shaderList[0].GetViewPosLocation();
 	uniformSpecularIntensity = shaderList[0].GetSpecularIntensityLocation();
 	uniformShininess = shaderList[0].GetShininessLocation();
 
@@ -662,8 +655,7 @@ void RenderPass()
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
-	glUniform3f(uniformViewPos, camera.getCamPostion().x, camera.getCamPostion().y, camera.getCamPostion().z);
+	shaderList[0].SetVectorThree("viewPosition", &camPos);
 
 	shaderList[0].setDirectionalLight(&mainLight);
 	shaderList[0].setPointLights(pointLights, pointLightCount, 3, 0);
@@ -824,11 +816,11 @@ int main()
 		}
 
 		
-		RenderPass();
-		//reflectionObjPass();
+		RenderPass(camera.getCamPostion());
+		// reflectionObjPass(camera.getCamPostion());
 		//TessellationOp(mainWindow.getsKeys());
 		//TessellationObjectPass(tessParam, tessHeight);
-		PBRPass();
+		PBRPass(camera.getCamPostion());
 		//InstancingPass();
 		
 

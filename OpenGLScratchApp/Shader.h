@@ -36,7 +36,6 @@ public:
 	GLuint GetAmbientColorLocation();
 	GLuint GetDiffuseIntensityLocation();
 	GLuint GetDirectionLocation();
-	GLuint GetViewPosLocation();
 	GLuint GetSpecularIntensityLocation();
 	GLuint GetShininessLocation();
 	GLuint GetOmniLightPosLocation();
@@ -52,12 +51,12 @@ public:
 	void SetTexture(GLuint textureUnit);
 	void SetDirectionalShadowMap(GLuint textureUnit);
 	void SetDirectionalLightTransform(glm::mat4* lTransform);
-	void SetPtoWTransform(glm::mat4* p2wTransform);
-	void SetViewPostion(glm::vec3* viewPos);
 	void SetOmniLightMatrices(std::vector<glm::mat4>lightMatrices);
 
 	//General set function
 	void SetFloat(const char* propertyName, GLfloat value);
+	void SetVectorThree(const char* propertyName, glm::vec3* value);
+	void SetMatrix(const char* propertyName, glm::mat4* value);
 	void SetTexture(const char* textureName, GLuint value);
 
 	void bindUniformBlockToBindingPoint(const std::string& uniformBlockName, const GLuint bindingPoint);
@@ -71,11 +70,10 @@ private:
 	int pointLightCount;
 	int spotLightCount;
 
-	GLuint shaderID, uniformProjection, uniformModel, uniformView, uniformViewPosition,
+	GLuint shaderID, uniformProjection, uniformModel, uniformView,
 		uniformSpecularIntensity, uniformShininess,
 		uniformTexture,
 		uniformDirectionalLightTransform, uniformDirectionalShadowMap,
-		uniformPtoWTransform,
 		uniformOmniLightPos, uniformOmniLightFarPlane,
 		uniformTessParam, uniformTessHeight, uniformDebugFlag;
 

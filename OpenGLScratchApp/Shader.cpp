@@ -162,11 +162,9 @@ void Shader::CompileProgram()
 	uniformDirectionLight.uniformDiffuseIntensity = glGetUniformLocation(shaderID, "directionalLight.base.diffuseIntensity");
 	uniformSpecularIntensity = glGetUniformLocation(shaderID, "material.specularIntensity");
 	uniformShininess = glGetUniformLocation(shaderID, "material.shininess");
-	uniformViewPosition = glGetUniformLocation(shaderID, "viewPosition");
 
 	uniformPointLightCount = glGetUniformLocation(shaderID, "pointLightCount");
 
-	uniformPtoWTransform = glGetUniformLocation(shaderID, "PToWTransform");
 
 	uniformTessParam = glGetUniformLocation(shaderID, "uniformTessParam");
 	uniformTessHeight = glGetUniformLocation(shaderID, "uniformTessHeight");
@@ -323,10 +321,6 @@ GLuint Shader::GetShininessLocation()
 	return uniformShininess;
 }
 
-GLuint Shader::GetViewPosLocation()
-{
-	return uniformViewPosition;
-}
 
 GLuint Shader::GetOmniLightPosLocation()
 {
@@ -413,17 +407,6 @@ void Shader::SetDirectionalLightTransform(glm::mat4* lTransform)
 	glUniformMatrix4fv(uniformDirectionalLightTransform, 1, GL_FALSE, glm::value_ptr(*lTransform));
 }
 
-void Shader::SetPtoWTransform(glm::mat4* p2wTransform)
-{
-	glUniformMatrix4fv(uniformPtoWTransform, 1, GL_FALSE, glm::value_ptr(*p2wTransform));
-}
-
-void Shader::SetViewPostion(glm::vec3* viewPos)
-{
-	glUniform3fv(uniformViewPosition, 1, glm::value_ptr(*viewPos));
-}
-
-
 void Shader::SetOmniLightMatrices(std::vector<glm::mat4>lightMatrices)
 {
 	for (size_t i = 0; i < 6; i++)
@@ -444,6 +427,34 @@ void Shader::SetFloat(const char* propertyName, GLfloat value)
 		glUniform1f(uniformFloat, value);
 	}
 	
+}
+
+void Shader::SetVectorThree(const char* propertyName, glm::vec3* value)
+{
+	GLint uniformVector = glGetUniformLocation(shaderID, propertyName);
+	if (uniformVector == -1)
+	{
+		printf(shaderID + "  doesn't contain property %s", propertyName);
+	}
+	else
+	{
+		glUniform3fv(uniformVector, 1, glm::value_ptr(*value));
+	}
+
+}
+
+void Shader::SetMatrix(const char* propertyName, glm::mat4* value)
+{
+	GLint uniformMatrix = glGetUniformLocation(shaderID, propertyName);
+	if (uniformMatrix == -1)
+	{
+		printf(shaderID + "  doesn't contain property %s", propertyName);
+	}
+	else
+	{
+		glUniformMatrix4fv(uniformMatrix, 1, GL_FALSE, glm::value_ptr(*value));
+	}
+
 }
 
 void Shader::SetTexture(const char* textureName, GLuint value)
