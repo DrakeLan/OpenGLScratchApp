@@ -613,7 +613,7 @@ void PBRPass()
 	uniformAO = glGetUniformLocation(basicPBRShader.GetShaderID(), "ao");
 
 	glUniform1f(uniformMetallic, 1.0);
-	glUniform1f(uniformRoughness, 0.0);
+	glUniform1f(uniformRoughness, 0.8);
 	glUniform1f(uniformAO, 1.0);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -781,7 +781,7 @@ int main()
 
 	glm::vec4 testColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-	glEnable(GL_FRAMEBUFFER_SRGB);
+	//glEnable(GL_FRAMEBUFFER_SRGB);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	iblRender = IBLRender(512.0f, 512.0f, 32.0f, 32.0f);
