@@ -45,6 +45,7 @@ void IBLRender::CalTransformMatrix()
 
 		model = glm::translate(model, translateVectors[i]);
 		model = glm::rotate(model, rotateAngels[i] * toRadians, rotateAxis[i]);
+		//model = glm::scale(model, glm::vec3(1.0, -1.0, 1.0));
 
 		transMatrixs[i] = model;
 	}

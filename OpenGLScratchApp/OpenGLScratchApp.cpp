@@ -31,6 +31,7 @@
 // Window dimensions
 const float toRadians = 3.14159265f / 180.0f;
 
+glm::vec3 cameraPos;
 
 GLuint uniformProjection = 0, uniformModel = 0, uniformView = 0,
 uniformSpecularIntensity = 0, uniformShininess = 0, uniformOmniLightPos = 0, uniformOmniFarPlane = 0, g_GlobalMatricesUBO = 0,
@@ -475,12 +476,11 @@ void TessellationOp(bool* keys)
 	}
 }
 
-void EnvMapPass(glm::mat4 P2WMat, glm::vec3 viewpos)
+void EnvMapPass(glm::mat4 P2WMat)
 {
 	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	envMapShader.UseShader();
 	envMapShader.SetMatrix("PToWTransform", &P2WMat);
-	envMapShader.SetVectorThree("viewPosition", &viewpos);
 
 	glActiveTexture(GL_TEXTURE0);
 	
@@ -530,7 +530,7 @@ void OmniShadowMapPass(PointLight* light)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void reflectionObjPass(glm::vec3 camPos)
+void ReflectionObjPass()
 {
 	glm::mat4 model(1.0f);
 
@@ -539,17 +539,19 @@ void reflectionObjPass(glm::vec3 camPos)
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 	uniformModel = reflectionShader.GetModelLocation();
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	reflectionShader.SetVectorThree("viewPosition", &camPos);
+	reflectionShader.SetVectorThree("viewPosition", &cameraPos);
 
-	CubeMap.UseCubeMap();
+	//CubeMap.UseCubeMap();
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, importanceSampleTexture->GetTextureID());
 
-	TeaPot.RenderModel();
+	blackhawk.RenderModel();
 
 	distortionShader.UseShader();
 	model = glm::translate(model, glm::vec3(0.0f, -1.0f, 0.0f));
 	uniformModel = distortionShader.GetModelLocation();
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
-	distortionShader.SetVectorThree("viewPosition", &camPos);
+	distortionShader.SetVectorThree("viewPosition", &cameraPos);
 	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 	meshList[2]->RenderMesh();
 
@@ -598,13 +600,13 @@ void InstancingPass()
 }
 
 //To DO: Standarlize scene render pass
-void PBRPass(glm::vec3 camPos)
+void PBRPass()
 {
 	basicPBRShader.UseShader();
 
 	uniformModel = basicPBRShader.GetModelLocation();
 	
-	basicPBRShader.SetVectorThree("viewPosition", &camPos);
+	basicPBRShader.SetVectorThree("viewPosition", &cameraPos);
 
 	uniformMetallic = glGetUniformLocation(basicPBRShader.GetShaderID(), "metallic");
 	uniformRoughness = glGetUniformLocation(basicPBRShader.GetShaderID(), "roughness");
@@ -641,7 +643,7 @@ void PBRPass(glm::vec3 camPos)
 
 }
 
-void RenderPass(glm::vec3 camPos)
+void RenderPass()
 {
 	shaderList[0].UseShader();
 	//TO DO: Use materials to query uniform varible need to be full in different shader
@@ -655,7 +657,7 @@ void RenderPass(glm::vec3 camPos)
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	shaderList[0].SetVectorThree("viewPosition", &camPos);
+	shaderList[0].SetVectorThree("viewPosition", &cameraPos);
 
 	shaderList[0].setDirectionalLight(&mainLight);
 	shaderList[0].setPointLights(pointLights, pointLightCount, 3, 0);
@@ -768,6 +770,8 @@ int main()
 		50.0f);
 	spotLightCount++;
 
+	cameraPos = camera.getCamPostion();
+
 	glm::mat4 projection = glm::perspective(glm::radians(60.0f), mainWindow.getBufferWidth() / mainWindow.getBufferHeight(), 0.1f, 100.0f);
 
 	glm::mat4 inversPro = glm::inverse(projection);
@@ -798,9 +802,11 @@ int main()
 		//Get and handle user input events
 		glfwPollEvents();
 
-		camera.KeyControl(mainWindow.getsKeys(), deltaTime);
 		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
-	
+		camera.KeyControl(mainWindow.getsKeys(), deltaTime);
+
+		cameraPos = camera.getCamPostion();
+
 		SetGlobalMatrixUBO(projection, camera.calculateViewMatrix());
 
 		DirectinalShadowMapPass(&mainLight);
@@ -816,17 +822,17 @@ int main()
 		}
 
 		
-		RenderPass(camera.getCamPostion());
-		// reflectionObjPass(camera.getCamPostion());
+		RenderPass();
+		//ReflectionObjPass();
 		//TessellationOp(mainWindow.getsKeys());
 		//TessellationObjectPass(tessParam, tessHeight);
-		PBRPass(camera.getCamPostion());
+		PBRPass();
 		//InstancingPass();
 		
 
-		PtoWMat = glm::mat4(glm::inverse(camera.calculateViewMatrix())) * glm::mat4(inversPro);
+		PtoWMat = glm::mat4(glm::inverse(camera.calculateOriginalViewMatrix())) * glm::mat4(inversPro);
 		
-		EnvMapPass(PtoWMat, camera.getCamPostion());
+		EnvMapPass(PtoWMat);
 
 		glUseProgram(0);
 

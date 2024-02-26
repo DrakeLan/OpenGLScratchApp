@@ -64,7 +64,8 @@ float DistributionGGX(float NdotH, float roughness)
 
 void main()
 {
-    vec3 N = -normalize(wPos);    
+    //Cant't figure out why Y need negative here to be right, opposite to equ_to_cube
+    vec3 N = normalize(vec3(wPos.x, -wPos.y, wPos.z));    
     vec3 R = N;
     vec3 V = R;
 

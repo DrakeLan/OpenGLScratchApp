@@ -19,7 +19,10 @@ public:
 	glm::vec3 getCamPostion();
 	glm::vec3 getCamDirection();
 
+	void SetCamPosition(glm::vec3 pos);
+
 	glm::mat4 calculateViewMatrix();
+	glm::mat4 calculateOriginalViewMatrix();
 
 	~Camera();
 
