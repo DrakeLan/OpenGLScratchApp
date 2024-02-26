@@ -692,6 +692,7 @@ int main()
 
 	InitTessParams();
 
+
 	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.5f);
 
 	brickTextrue = Textrue((char*)("Textures/brick.png"));
@@ -780,6 +781,7 @@ int main()
 
 	glm::vec4 testColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
+	glEnable(GL_FRAMEBUFFER_SRGB);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	iblRender = IBLRender(512.0f, 512.0f, 32.0f, 32.0f);
