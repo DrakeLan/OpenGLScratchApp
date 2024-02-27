@@ -25,10 +25,13 @@
 #include "Material.h"
 #include "UniformBufferObject.h"
 #include "Model.h"
-
+#include "RenderTexture.h"
 #include "IBLRender.h"
 
 // Window dimensions
+const GLuint windowWidth = 1366;
+const GLuint windowHeight = 768;
+
 const float toRadians = 3.14159265f / 180.0f;
 
 glm::vec3 cameraPos;
@@ -57,6 +60,8 @@ Shader basicTessellationShader;
 Shader basicInstancingShader;
 
 Shader basicPBRShader;
+
+Shader copyShader;
 
 
 Camera camera;
@@ -102,6 +107,8 @@ IBLTexture *envCubeMap;
 IBLTexture *irradianceTexture;
 IBLTexture *importanceSampleTexture;
 IBLTexture *brdfPreComputeMap;
+
+RenderTexture baseRT;
 
 //To do: create a OP class to control, do not create a flag every frame
 bool pressedFlag = false;
@@ -292,6 +299,11 @@ void SetGlobalMatrixUBO(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+void CreatBaseRenderTarget(GLuint targetWidth, GLuint targetHeight)
+{
+	baseRT.Init_SRGBA(targetWidth, targetHeight);
+
+}
 
 void CreateShaders()
 {
@@ -330,6 +342,9 @@ void CreateShaders()
 	distortionShader = Shader();
 	distortionShader.CreateFromFiles("Shaders/reflection.vert", "Shaders/reflection_distortion.frag");
 	distortionShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
+
+	copyShader = Shader();
+	copyShader.CreateFromFiles("Shaders/copy_shader.vert", "Shaders/copy_shader.frag");
 
 }
 
@@ -476,6 +491,34 @@ void TessellationOp(bool* keys)
 	}
 }
 
+void ClearPass()
+{
+	glViewport(0, 0, windowWidth, windowHeight);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	baseRT.Clear();
+}
+
+void OnScreenPass()
+{
+
+	PostRenderHelper renderHelper = PostRenderHelper();
+	renderHelper.Init();
+
+	glViewport(0, 0, windowWidth, windowHeight);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
+	copyShader.UseShader();
+	baseRT.Read(GL_TEXTURE0);
+
+	copyShader.SetTexture("sourceTex", 0);
+
+	renderHelper.GetFullquad()->RenderMesh();
+
+}
+
 void EnvMapPass(glm::mat4 P2WMat)
 {
 	//glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
@@ -505,7 +548,7 @@ void DirectinalShadowMapPass(DirectionalLight* light)
 
 	RenderScene();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void OmniShadowMapPass(PointLight* light)
@@ -527,7 +570,7 @@ void OmniShadowMapPass(PointLight* light)
 
 	RenderScene();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void ReflectionObjPass()
@@ -651,11 +694,6 @@ void RenderPass()
 	uniformSpecularIntensity = shaderList[0].GetSpecularIntensityLocation();
 	uniformShininess = shaderList[0].GetShininessLocation();
 
-	glViewport(0, 0, 1366, 768);
-
-	//clear window
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	shaderList[0].SetVectorThree("viewPosition", &cameraPos);
 
@@ -678,7 +716,7 @@ void RenderPass()
 
 int main()
 {
-	mainWindow = Window(1366, 768);
+	mainWindow = Window(windowWidth, windowHeight);
 	mainWindow.Initialise();
 
 	CreateObjects();
@@ -781,7 +819,6 @@ int main()
 
 	glm::vec4 testColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-	//glEnable(GL_FRAMEBUFFER_SRGB);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	iblRender = IBLRender(512.0f, 512.0f, 32.0f, 32.0f);
@@ -793,6 +830,8 @@ int main()
 	importanceSampleTexture = iblRender.ImportanceSamplePass(envCubeMap->GetTextureID());
 	brdfPreComputeMap = new IBLTexture();
 	brdfPreComputeMap = iblRender.BRDFPreComputePass();
+
+	CreatBaseRenderTarget(windowWidth, windowHeight);
 	
 	//loop until window close
 	while (!mainWindow.getShouldClose())
@@ -806,6 +845,12 @@ int main()
 
 		camera.mouseControl(mainWindow.getXChange(), mainWindow.getYChange());
 		camera.KeyControl(mainWindow.getsKeys(), deltaTime);
+
+
+		//Start render
+		ClearPass();
+		baseRT.BindFBO();
+		baseRT.Write();
 
 		cameraPos = camera.getCamPostion();
 
@@ -823,18 +868,20 @@ int main()
 			OmniShadowMapPass(&spotLights[i]);
 		}
 
-		
+		baseRT.BindFBO();
+		baseRT.Write();
 		RenderPass();
 		//ReflectionObjPass();
 		//TessellationOp(mainWindow.getsKeys());
 		//TessellationObjectPass(tessParam, tessHeight);
 		PBRPass();
 		//InstancingPass();
-		
 
 		PtoWMat = glm::mat4(glm::inverse(camera.calculateOriginalViewMatrix())) * glm::mat4(inversPro);
 		
 		EnvMapPass(PtoWMat);
+
+		OnScreenPass();
 
 		glUseProgram(0);
 
