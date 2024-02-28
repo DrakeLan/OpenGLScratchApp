@@ -93,4 +93,5 @@ void IBLTexture::Read(GLenum textureUnit)
 
 IBLTexture::~IBLTexture()
 {
+	glDeleteFramebuffers(1, &FBO);
 }
