@@ -11,9 +11,10 @@ public:
 	Textrue(const char* fileloc);
 	Textrue(const char* filelocs[]);
 
-	bool LoadTextrue();
-	bool LoadTextrueAlpha();
-	bool LoadCubeMap();
+	bool LoadTextrue(bool srgbFlag = true);
+	bool LoadTextrueAlpha(bool srgbFlag = true);
+	bool LoadTextrueHDR();
+	bool LoadCubeMap(bool srgbFlag = true);
 
 	void UseTextrue();
 	void UseCubeMap();
@@ -25,6 +26,7 @@ public:
 
 private:
 	GLuint textrueID;
+	GLenum texFormat;
 	int width, height, bitDepth;
 
 	const char* fileLocation;

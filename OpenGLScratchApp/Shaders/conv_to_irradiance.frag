@@ -12,7 +12,7 @@ const float PI = 3.14159265359;
 void main()
 {
     //Cant't figure out why Y need negative here to be right, opposite to equ_to_cube
-    vec3 normal = normalize(vec3(wPos.x, -wPos.y, wPos.z)); 
+    vec3 normal = normalize(vec3(wPos.x, -wPos.y, -wPos.z)); 
 
     vec3 irradiance = vec3(0.0);
 

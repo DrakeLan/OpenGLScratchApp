@@ -656,7 +656,7 @@ void PBRPass()
 	uniformAO = glGetUniformLocation(basicPBRShader.GetShaderID(), "ao");
 
 	glUniform1f(uniformMetallic, 1.0);
-	glUniform1f(uniformRoughness, 0.8);
+	glUniform1f(uniformRoughness, 0.0);
 	glUniform1f(uniformAO, 1.0);
 
 	glActiveTexture(GL_TEXTURE0);
@@ -743,8 +743,8 @@ int main()
 	grassTextrue.LoadTextrueAlpha();
 	heightTextrue = Textrue((char*)("Textures/teapot_disp.png"));
 	heightTextrue.LoadTextrue();
-	iblRadianceTexture = Textrue((char*)("Textures/ibl_hdr_radiance.png"));
-	iblRadianceTexture.LoadTextrue();
+	iblRadianceTexture = Textrue((char*)("Textures/table_mountain_1_puresky_4k.hdr"));
+	iblRadianceTexture.LoadTextrueHDR();
 	const char* cubeMapPath[6] = { "Textures/posx.jpg", "Textures/negx.jpg", "Textures/posy.jpg", "Textures/negy.jpg", "Textures/posz.jpg", "Textures/negz.jpg" };
 	CubeMap = Textrue(cubeMapPath);
 	CubeMap.LoadCubeMap();

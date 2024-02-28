@@ -42,6 +42,10 @@
     </ClCompile>
     <ClCompile Include="OmniShadowMap.cpp" />
     <ClCompile Include="UniformBufferObject.cpp" />
+    <ClCompile Include="IBLTexture.cpp" />
+    <ClCompile Include="IBLRender.cpp" />
+    <ClCompile Include="PostRenderHelper.cpp" />
+    <ClCompile Include="RenderTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -85,6 +89,10 @@
     </ClInclude>
     <ClInclude Include="OmniShadowMap.h" />
     <ClInclude Include="UniformBufferObject.h" />
+    <ClInclude Include="IBLTexture.h" />
+    <ClInclude Include="IBLRender.h" />
+    <ClInclude Include="PostRenderHelper.h" />
+    <ClInclude Include="RenderTexture.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Head Files">
