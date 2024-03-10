@@ -46,6 +46,7 @@
     <ClCompile Include="IBLTexture.cpp" />
     <ClCompile Include="PostRenderHelper.cpp" />
     <ClCompile Include="RenderTexture.cpp" />
+    <ClCompile Include="Entity.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -93,6 +94,7 @@
     <ClInclude Include="IBLTexture.h" />
     <ClInclude Include="PostRenderHelper.h" />
     <ClInclude Include="RenderTexture.h" />
+    <ClInclude Include="Entity.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Head Files">
