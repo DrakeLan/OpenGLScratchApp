@@ -1,6 +1,7 @@
 #pragma once
 
 #include <GL\glew.h>
+#include "Shader.h"
 
 class Material
 {
@@ -14,6 +15,7 @@ public:
 
 
 private:
+	Shader* shader;
 	GLfloat specularIntensity;
 	GLfloat shininess;
 };
