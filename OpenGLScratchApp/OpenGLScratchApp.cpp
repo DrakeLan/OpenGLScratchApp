@@ -749,7 +749,9 @@ int main()
 	CubeMap = Textrue(cubeMapPath);
 	CubeMap.LoadCubeMap();
 
-	shinyMaterial = Material(1.0f, 32.0f);
+	shinyMaterial = Material(1.0f, 32.0f, &basicPBRShader);
+	shinyMaterial.GetAllProps();
+	shinyMaterial.Debug();
 	dullMaterial = Material(0.0f, 0.0f);
 	PlainMaterial = Material(1.0f, 256.0f);
 
