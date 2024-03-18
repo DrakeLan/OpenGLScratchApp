@@ -1,6 +1,7 @@
 #pragma once
 #include "Model.h"
 #include "Transform.h"
+#include "Material.h"
 #include <list>
 #include <memory>
 
@@ -10,6 +11,7 @@ class Entity :
     public:
 
 		Transform transform;
+		Material material;
 
 		Entity() : Model() {}
 
