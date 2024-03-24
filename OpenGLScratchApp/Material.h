@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GL\glew.h>
+#include "MaterialProperty.h"
 #include "Shader.h"
 #include "Textrue.h"
 
@@ -13,6 +13,7 @@ public:
 	Material(Shader* sourceShader);
 
 	void GetAllProps();
+	MaterialProperty GetMatProp(string propName);
 	template<typename valueType>
 	void SetPropValue(const char* propName, valueType value);
 	void AllocateTextures();
@@ -28,6 +29,8 @@ private:
 	GLfloat specularIntensity;
 	GLfloat shininess;
 	GLint numActiveUniforms = 0;
+	vector<MaterialProperty> matProps;
+	vector<MaterialProperty> matTextures;
 	std::vector<std::string> propNames;
 	std::vector<GLint> propType;
 	std::vector<std::string> textureNames;

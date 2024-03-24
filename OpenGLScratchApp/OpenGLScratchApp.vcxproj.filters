@@ -48,6 +48,7 @@
     <ClCompile Include="RenderTexture.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="MaterialProperty.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -97,6 +98,7 @@
     <ClInclude Include="RenderTexture.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="MaterialProperty.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Head Files">
