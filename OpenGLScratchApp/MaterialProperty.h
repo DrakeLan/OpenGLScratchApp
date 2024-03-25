@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <GL\glew.h>
+#include <type_traits>
+#include "Textrue.h"
 
 using namespace std;
 
@@ -15,6 +17,7 @@ class MaterialProperty
 		string propName;
 		GLint propType;
 		vector<float> propValue;
+		Textrue* texturePtr;
 		GLuint propLocation;
 
 		template<typename... valueType>

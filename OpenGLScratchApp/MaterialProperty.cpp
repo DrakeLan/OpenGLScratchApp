@@ -5,6 +5,7 @@ MaterialProperty::MaterialProperty()
 	propName = "";
 	propType = 0;
 	propLocation = 0.0;
+	texturePtr = nullptr;
 }
 
 MaterialProperty::MaterialProperty(string name, GLint type, GLuint location)
@@ -21,8 +22,15 @@ MaterialProperty::~MaterialProperty()
 template<typename... valueType>
 void MaterialProperty::SetPropValue(valueType ... value)
 {
-	propValue.clear();
-	propValue.push_back(value);
+	if (is_same<valueType, Textrue*>::value)
+	{
+		texturePtr = value;
+	}
+	else
+	{
+		propValue.clear();
+		propValue.push_back(value);
+	}
 
 	/*switch (propType)
 	{

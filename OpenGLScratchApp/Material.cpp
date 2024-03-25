@@ -83,7 +83,7 @@ MaterialProperty Material::GetMatProp(string propName)
 			else
 			{
 				printf("Property isn't exsit!");
-				return;
+				return MaterialProperty();
 			}
 		}
 	}
@@ -93,50 +93,26 @@ template<typename valueType>
 void Material::SetPropValue(const char* propName, valueType value)
 {
 	MaterialProperty matProp = GetMatProp(propName);
-	std::vector<std::string>::iterator curPropName = std::find(propNames.begin(), propNames.end(), propName);
 
-	if (matProp != NULL)
+	if (matProp.propName != "")
 	{
-		GLuint curLocation = std::distance(propNames.begin(), curPropName);
-		GLint curType = propType[curLocation];
-
-		switch (curType)
-		{
-		case GL_FLOAT:
-			glUniform1f(curLocation, value);
-			break;
-		case GL_FLOAT_VEC2:
-			glUniform2f(curLocation, value.x, value.y);
-			break;
-		case GL_FLOAT_VEC3:
-			glUniform3f(curLocation, value.x, value.y, value.z);
-			break;
-		case GL_FLOAT_VEC4:
-			glUniform4f(curLocation, value.x, value.y, value.z, value.w);
-			break;
-		case GL_INT||GL_BOOL:
-			glUniform1i(curLocation, value);
-			break;
-		default:
-			printf("The property is not correct type!");
-			break;
-		}
+		matProp.SetPropValue(value);
 	}
 	else
 	{
 		printf("Property '%s' doesn't exist!", propName);
-
-		return;
 	}
+
+	return;
 }
 
 void Material::AllocateTextures()
 {
-	if (textureNames.size() > 0)
+	if (matTextures.size() > 0)
 	{
-		for (size_t i = 0; i < textureNames.size(); i++)
+		for (size_t i = 0; i < matTextures.size(); i++)
 		{
-			glUniform1i(textureLocations[i], i);
+			glUniform1i(matTextures[i].propLocation, i);
 		}
 	}
 }
