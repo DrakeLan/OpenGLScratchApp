@@ -16,7 +16,6 @@ public:
 	MaterialProperty GetMatProp(string propName);
 	template<typename valueType>
 	void SetPropValue(const char* propName, valueType value);
-	void AllocateTextures();
 	void SetTexture(const char* propName, Textrue tex);
 	void UseMaterial();
 	void UseMaterial(GLuint specularIntensityLocation, GLuint shininessLocation);
@@ -36,6 +35,9 @@ private:
 	std::vector<std::string> textureNames;
 	std::vector<GLuint> textureLocations;
 	std::vector<GLuint> textureTypes;
+
+	void AllocateTextures();
+	void SendValueToProgram();
 };
 
 

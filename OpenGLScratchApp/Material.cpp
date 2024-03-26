@@ -117,6 +117,18 @@ void Material::AllocateTextures()
 	}
 }
 
+void Material::SendValueToProgram()
+{
+	if (matProps.size() > 0)
+	{
+		for (size_t i = 0; i < matProps.size(); i++)
+		{
+
+		}
+	}
+}
+
+
 void Material::SetTexture(const char* propName, Textrue tex)
 {
 	std::vector<std::string>::iterator curPropName = std::find(textureNames.begin(), textureNames.end(), propName);
