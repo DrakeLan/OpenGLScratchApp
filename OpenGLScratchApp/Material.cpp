@@ -123,7 +123,27 @@ void Material::SendValueToProgram()
 	{
 		for (size_t i = 0; i < matProps.size(); i++)
 		{
-
+			switch (matProps[i].propType)
+			{
+			case GL_FLOAT:
+				glUniform1f(matProps[i].propLocation, matProps[i].propValue[0]);
+				break;
+			case GL_FLOAT_VEC2:
+				glUniform2f(matProps[i].propLocation, matProps[i].propValue[0], matProps[i].propValue[1]);
+				break;
+			case GL_FLOAT_VEC3:
+				glUniform3f(matProps[i].propLocation, matProps[i].propValue[0], matProps[i].propValue[1], matProps[i].propValue[2]);
+				break;
+			case GL_FLOAT_VEC4:
+				glUniform4f(matProps[i].propLocation, matProps[i].propValue[0], matProps[i].propValue[1], matProps[i].propValue[2], matProps[i].propValue[3]);
+				break;
+			case GL_INT || GL_BOOL:
+				glUniform1i(matProps[i].propLocation, matProps[i].propValue[0]);
+				break;
+			default:
+				printf("The property is not correct type!");
+				break;
+			}
 		}
 	}
 }
