@@ -25,8 +25,21 @@ class MaterialProperty
 
 		~MaterialProperty();
 
-
-
 };
+
+template<typename... valueType>
+void MaterialProperty::SetPropValue(valueType ... value)
+{
+	if (is_same<valueType, Textrue*>::value)
+	{
+		texturePtr = value;
+	}
+	else
+	{
+		propValue.clear();
+		propValue.push_back(value);
+	}
+}
+
 
 

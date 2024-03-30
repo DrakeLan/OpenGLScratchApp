@@ -13,13 +13,6 @@ Material::Material(GLfloat sIntensity, GLfloat shine)
 	shininess = shine;
 }
 
-Material::Material(GLfloat sIntensity, GLfloat shine, Shader* sourceShader)
-{
-	specularIntensity = sIntensity;
-	shininess = shine;
-	shader = sourceShader;
-}
-
 Material::Material(Shader* sourceShader)
 {
 	shader = sourceShader;
@@ -89,22 +82,7 @@ MaterialProperty Material::GetMatProp(string propName)
 	}
 }
 
-template<typename valueType>
-void Material::SetPropValue(const char* propName, valueType value)
-{
-	MaterialProperty matProp = GetMatProp(propName);
 
-	if (matProp.propName != "")
-	{
-		matProp.SetPropValue(value);
-	}
-	else
-	{
-		printf("Property '%s' doesn't exist!", propName);
-	}
-
-	return;
-}
 
 void Material::AllocateTextures()
 {
@@ -114,6 +92,33 @@ void Material::AllocateTextures()
 		{
 			glUniform1i(matTextures[i].propLocation, i);
 		}
+	}
+}
+
+void Material::BindTextures()
+{
+	for (size_t i = 0; i < matTextures.size(); i++)
+	{
+		if (matTextures[i].texturePtr != nullptr)
+		{
+			switch (matTextures[i].propType)
+			{
+			case GL_SAMPLER_2D:
+				glBindTexture(GL_SAMPLER_2D, matTextures[i].texturePtr->getTextrueID());
+				break;
+			case GL_SAMPLER_CUBE:
+				glBindTexture(GL_SAMPLER_CUBE, matTextures[i].texturePtr->getTextrueID());
+				break;
+			default:
+				printf("The texture is not correct type!");
+				break;
+			}
+		}
+		else
+		{
+			printf("Texture is not set!");
+		}
+
 	}
 }
 
@@ -149,42 +154,19 @@ void Material::SendValueToProgram()
 }
 
 
-void Material::SetTexture(const char* propName, Textrue tex)
+void Material::SetShader(Shader sourceShader)
 {
-	std::vector<std::string>::iterator curPropName = std::find(textureNames.begin(), textureNames.end(), propName);
-
-	if (curPropName != propNames.end())
-	{
-		GLuint texUnit = std::distance(textureNames.begin(), curPropName);
-		GLint curType = textureTypes[texUnit];
-
-		glActiveTexture(GL_TEXTURE0 + texUnit);
-
-		switch (curType)
-		{
-		case GL_SAMPLER_2D:
-			glBindTexture(GL_SAMPLER_2D, tex.getTextrueID());
-			break;
-		case GL_SAMPLER_CUBE:
-			glBindTexture(GL_SAMPLER_CUBE, tex.getTextrueID());
-			break;
-		default:
-			printf("The texture is not correct type!");
-			break;
-		}
-	}
-	else
-	{
-		printf("Texture '%s' doesn't exist!", propName);
-
-		return;
-	}
-	
+	shader = &sourceShader;
+	GetAllProps();
 }
 
 void Material::UseMaterial()
 {
 	shader->UseShader();
+
+	AllocateTextures();
+	BindTextures();
+	SendValueToProgram();
 }
 
 void Material::UseMaterial(GLuint specularIntensityLocation, GLuint shininessLocation)

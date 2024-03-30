@@ -78,6 +78,7 @@ Textrue iblRadianceTexture;
 Material shinyMaterial;
 Material dullMaterial;
 Material PlainMaterial;
+Material pbrMaterial;
 
 Model xwing;
 Model blackhawk;
@@ -645,13 +646,13 @@ void InstancingPass()
 //To DO: Standarlize scene render pass
 void PBRPass()
 {
-	basicPBRShader.UseShader();
+	pbrMaterial.UseMaterial();
 
 	uniformModel = basicPBRShader.GetModelLocation();
 	
 	basicPBRShader.SetVectorThree("viewPosition", &cameraPos);
 
-	uniformMetallic = glGetUniformLocation(basicPBRShader.GetShaderID(), "metallic");
+	/*uniformMetallic = glGetUniformLocation(basicPBRShader.GetShaderID(), "metallic");
 	uniformRoughness = glGetUniformLocation(basicPBRShader.GetShaderID(), "roughness");
 	uniformAO = glGetUniformLocation(basicPBRShader.GetShaderID(), "ao");
 
@@ -669,7 +670,7 @@ void PBRPass()
 
 	glActiveTexture(GL_TEXTURE2);
 	glBindTexture(GL_TEXTURE_2D, brdfPreComputeMap->GetTextureID());
-	basicPBRShader.SetTexture("BRDF_LUT", 2);
+	basicPBRShader.SetTexture("BRDF_LUT", 2);*/
 
 //To Do: Make light data in UBO
 	basicPBRShader.setDirectionalLight(&mainLight);
@@ -749,10 +750,18 @@ int main()
 	CubeMap = Textrue(cubeMapPath);
 	CubeMap.LoadCubeMap();
 
-	shinyMaterial = Material(1.0f, 32.0f, &basicPBRShader);
-	shinyMaterial.GetAllProps();
+	shinyMaterial = Material(1.0f, 32.0f);
 	dullMaterial = Material(0.0f, 0.0f);
 	PlainMaterial = Material(1.0f, 256.0f);
+
+	pbrMaterial = Material(&basicPBRShader);
+	pbrMaterial.SetPropValue("metallic", 1.0f);
+	pbrMaterial.SetPropValue("roughness", 0.0f);
+	pbrMaterial.SetPropValue("ao", 1.0f);
+
+	pbrMaterial.SetPropValue("irradianceMap", &irradianceTexture);
+	pbrMaterial.SetPropValue("importanceSampleMap", &importanceSampleTexture);
+	pbrMaterial.SetPropValue("BRDF_LUT", &brdfPreComputeMap);
 
 	xwing = Model();
 	xwing.LoadModel("Models/x-wing.obj");

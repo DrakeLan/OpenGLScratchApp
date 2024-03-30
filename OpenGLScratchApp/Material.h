@@ -9,14 +9,12 @@ class Material
 public:
 	Material();
 	Material(GLfloat sIntensity, GLfloat shine);
-	Material(GLfloat sIntensity, GLfloat shine, Shader* shader);
 	Material(Shader* sourceShader);
 
-	void GetAllProps();
-	MaterialProperty GetMatProp(string propName);
-	template<typename valueType>
-	void SetPropValue(const char* propName, valueType value);
-	void SetTexture(const char* propName, Textrue tex);
+	template<typename... valueType>
+	void SetPropValue(const char* propName, valueType ... value);
+
+	void SetShader(Shader sourceShader);
 	void UseMaterial();
 	void UseMaterial(GLuint specularIntensityLocation, GLuint shininessLocation);
 
@@ -36,8 +34,27 @@ private:
 	std::vector<GLuint> textureLocations;
 	std::vector<GLuint> textureTypes;
 
+	void GetAllProps();
 	void AllocateTextures();
+	void BindTextures();
 	void SendValueToProgram();
+	MaterialProperty GetMatProp(string propName);
 };
 
+template<typename... valueType>
+inline void Material::SetPropValue(const char* propName, valueType ... value)
+{
+	MaterialProperty matProp = GetMatProp(propName);
+
+	if (matProp.propName != "")
+	{
+		matProp.SetPropValue(value);
+	}
+	else
+	{
+		printf("Property '%s' doesn't exist!", propName);
+	}
+
+	return;
+}
 
