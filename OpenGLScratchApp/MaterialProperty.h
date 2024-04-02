@@ -17,29 +17,14 @@ class MaterialProperty
 		string propName;
 		GLint propType;
 		vector<float> propValue;
-		Textrue* texturePtr;
 		GLuint propLocation;
-
-		template<typename... valueType>
-		void SetPropValue(valueType ... value);
+		bool dirtyFlag;
+		
+		void SetPropValue(float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
 
 		~MaterialProperty();
 
 };
-
-template<typename... valueType>
-void MaterialProperty::SetPropValue(valueType ... value)
-{
-	if (is_same<valueType, Textrue*>::value)
-	{
-		texturePtr = value;
-	}
-	else
-	{
-		propValue.clear();
-		propValue.push_back(value);
-	}
-}
 
 
 

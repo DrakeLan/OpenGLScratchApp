@@ -647,34 +647,13 @@ void InstancingPass()
 void PBRPass()
 {
 	pbrMaterial.UseMaterial();
-
+	
 	uniformModel = basicPBRShader.GetModelLocation();
 	
 	basicPBRShader.SetVectorThree("viewPosition", &cameraPos);
 
-	/*uniformMetallic = glGetUniformLocation(basicPBRShader.GetShaderID(), "metallic");
-	uniformRoughness = glGetUniformLocation(basicPBRShader.GetShaderID(), "roughness");
-	uniformAO = glGetUniformLocation(basicPBRShader.GetShaderID(), "ao");
-
-	glUniform1f(uniformMetallic, 1.0);
-	glUniform1f(uniformRoughness, 0.0);
-	glUniform1f(uniformAO, 1.0);
-
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceTexture->GetTextureID());
-	basicPBRShader.SetTexture("irradianceMap", 0);
-
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, importanceSampleTexture->GetTextureID());
-	basicPBRShader.SetTexture("importanceSampleMap", 1);
-
-	glActiveTexture(GL_TEXTURE2);
-	glBindTexture(GL_TEXTURE_2D, brdfPreComputeMap->GetTextureID());
-	basicPBRShader.SetTexture("BRDF_LUT", 2);*/
-
 //To Do: Make light data in UBO
 	basicPBRShader.setDirectionalLight(&mainLight);
-
 
 	glm::mat4 model(1.0f);
 
@@ -749,19 +728,6 @@ int main()
 	const char* cubeMapPath[6] = { "Textures/posx.jpg", "Textures/negx.jpg", "Textures/posy.jpg", "Textures/negy.jpg", "Textures/posz.jpg", "Textures/negz.jpg" };
 	CubeMap = Textrue(cubeMapPath);
 	CubeMap.LoadCubeMap();
-
-	shinyMaterial = Material(1.0f, 32.0f);
-	dullMaterial = Material(0.0f, 0.0f);
-	PlainMaterial = Material(1.0f, 256.0f);
-
-	pbrMaterial = Material(&basicPBRShader);
-	pbrMaterial.SetPropValue("metallic", 1.0f);
-	pbrMaterial.SetPropValue("roughness", 0.0f);
-	pbrMaterial.SetPropValue("ao", 1.0f);
-
-	pbrMaterial.SetPropValue("irradianceMap", &irradianceTexture);
-	pbrMaterial.SetPropValue("importanceSampleMap", &importanceSampleTexture);
-	pbrMaterial.SetPropValue("BRDF_LUT", &brdfPreComputeMap);
 
 	xwing = Model();
 	xwing.LoadModel("Models/x-wing.obj");
@@ -840,6 +806,18 @@ int main()
 	importanceSampleTexture = iblRender.ImportanceSamplePass(envCubeMap->GetTextureID());
 	brdfPreComputeMap = new IBLTexture();
 	brdfPreComputeMap = iblRender.BRDFPreComputePass();
+
+	shinyMaterial = Material(1.0f, 32.0f);
+	dullMaterial = Material(0.0f, 0.0f);
+	PlainMaterial = Material(1.0f, 256.0f);
+
+	pbrMaterial = Material(&basicPBRShader);
+	pbrMaterial.SetPropValue("metallic", 1.0f);
+	pbrMaterial.SetPropValue("roughness", 0.0f);
+	pbrMaterial.SetPropValue("ao", 1.0f);
+	pbrMaterial.SetTextureValue("irradianceMap", irradianceTexture->GetTextureID());
+	pbrMaterial.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
+	pbrMaterial.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
 
 	CreatBaseRenderTarget(windowWidth, windowHeight);
 	

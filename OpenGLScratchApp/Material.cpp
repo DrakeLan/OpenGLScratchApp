@@ -48,7 +48,7 @@ void Material::GetAllProps()
 			std::string name((char*)&nameData[0], nameData.size() - 1);
 
 			matProp.propName = name;
-			matProp.propLocation = attrib;
+			matProp.propLocation = glGetUniformLocation(shaderID, name.c_str());
 			matProp.propType = values[1];
 
 			if (values[1] == GL_SAMPLER_2D || values[1] == GL_SAMPLER_CUBE)
@@ -63,22 +63,18 @@ void Material::GetAllProps()
 	}
 }
 
-MaterialProperty Material::GetMatProp(string propName)
+MaterialProperty* Material::GetMatProp(string propName, vector<MaterialProperty>* props)
 {
-	if (matProps.size() > 0)
+	if (props->size() > 0)
 	{
-		for (size_t i = 0; i < matProps.size(); i++)
+		for (size_t i = 0; i < props->size(); i++)
 		{
-			if (matProps[i].propName.compare(propName) == 0)
+			if (props->at(i).propName.compare(propName) == 0)
 			{
-				return matProps[i];
-			}
-			else
-			{
-				printf("Property isn't exsit!");
-				return MaterialProperty();
+				return &(props->at(i));
 			}
 		}
+		return  nullptr;
 	}
 }
 
@@ -88,9 +84,14 @@ void Material::AllocateTextures()
 {
 	if (matTextures.size() > 0)
 	{
+		
 		for (size_t i = 0; i < matTextures.size(); i++)
 		{
-			glUniform1i(matTextures[i].propLocation, i);
+			if (matTextures[i].dirtyFlag)
+			{
+				glUniform1i(matTextures[i].propLocation, i);
+				matTextures[i].dirtyFlag = false;
+			}
 		}
 	}
 }
@@ -99,20 +100,23 @@ void Material::BindTextures()
 {
 	for (size_t i = 0; i < matTextures.size(); i++)
 	{
-		if (matTextures[i].texturePtr != nullptr)
+		if (matTextures[i].propValue.size() > 0)
 		{
+
+			glActiveTexture(GL_TEXTURE0 + i);
 			switch (matTextures[i].propType)
 			{
 			case GL_SAMPLER_2D:
-				glBindTexture(GL_SAMPLER_2D, matTextures[i].texturePtr->getTextrueID());
+				glBindTexture(GL_TEXTURE_2D, (GLuint)(matTextures[i].propValue[0]));
 				break;
 			case GL_SAMPLER_CUBE:
-				glBindTexture(GL_SAMPLER_CUBE, matTextures[i].texturePtr->getTextrueID());
+				glBindTexture(GL_TEXTURE_CUBE_MAP, (GLuint)(matTextures[i].propValue[0]));
 				break;
 			default:
 				printf("The texture is not correct type!");
 				break;
 			}
+
 		}
 		else
 		{
@@ -128,31 +132,68 @@ void Material::SendValueToProgram()
 	{
 		for (size_t i = 0; i < matProps.size(); i++)
 		{
-			switch (matProps[i].propType)
+			if (matProps[i].dirtyFlag)
 			{
-			case GL_FLOAT:
-				glUniform1f(matProps[i].propLocation, matProps[i].propValue[0]);
-				break;
-			case GL_FLOAT_VEC2:
-				glUniform2f(matProps[i].propLocation, matProps[i].propValue[0], matProps[i].propValue[1]);
-				break;
-			case GL_FLOAT_VEC3:
-				glUniform3f(matProps[i].propLocation, matProps[i].propValue[0], matProps[i].propValue[1], matProps[i].propValue[2]);
-				break;
-			case GL_FLOAT_VEC4:
-				glUniform4f(matProps[i].propLocation, matProps[i].propValue[0], matProps[i].propValue[1], matProps[i].propValue[2], matProps[i].propValue[3]);
-				break;
-			case GL_INT || GL_BOOL:
-				glUniform1i(matProps[i].propLocation, matProps[i].propValue[0]);
-				break;
-			default:
-				printf("The property is not correct type!");
-				break;
+				switch (matProps[i].propType)
+				{
+				case GL_FLOAT:
+					glUniform1f(matProps[i].propLocation, matProps[i].propValue[0]);
+					break;
+				case GL_FLOAT_VEC2:
+					glUniform2f(matProps[i].propLocation, matProps[i].propValue[0], matProps[i].propValue[1]);
+					break;
+				case GL_FLOAT_VEC3:
+					glUniform3f(matProps[i].propLocation, matProps[i].propValue[0], matProps[i].propValue[1], matProps[i].propValue[2]);
+					break;
+				case GL_FLOAT_VEC4:
+					glUniform4f(matProps[i].propLocation, matProps[i].propValue[0], matProps[i].propValue[1], matProps[i].propValue[2], matProps[i].propValue[3]);
+					break;
+				case GL_INT || GL_BOOL:
+					glUniform1i(matProps[i].propLocation, matProps[i].propValue[0]);
+					break;
+				default:
+					printf("The property is not correct type!");
+					break;
+				}
+				matProps[i].dirtyFlag = false;
 			}
+
 		}
 	}
 }
 
+
+void Material::SetPropValue(const char* propName, float x, float y, float z, float w)
+{
+	MaterialProperty* matprop = GetMatProp(propName, &matProps);
+
+	if (matprop != nullptr)
+	{
+		matprop->SetPropValue(x, y, z, w);
+	}
+	else
+	{
+		printf("Property '%s' doesn't exist!", propName);
+	}
+
+	return;
+}
+
+void Material::SetTextureValue(const char* propName, float x)
+{
+	MaterialProperty* matprop = GetMatProp(propName, &matTextures);
+
+	if (matprop != nullptr)
+	{
+		matprop->SetPropValue(x);
+	}
+	else
+	{
+		printf("Texture '%s' doesn't exist!", propName);
+	}
+
+	return;
+}
 
 void Material::SetShader(Shader sourceShader)
 {
@@ -164,8 +205,9 @@ void Material::UseMaterial()
 {
 	shader->UseShader();
 
-	AllocateTextures();
+	
 	BindTextures();
+	AllocateTextures();
 	SendValueToProgram();
 }
 

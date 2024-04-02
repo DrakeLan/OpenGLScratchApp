@@ -11,8 +11,8 @@ public:
 	Material(GLfloat sIntensity, GLfloat shine);
 	Material(Shader* sourceShader);
 
-	template<typename... valueType>
-	void SetPropValue(const char* propName, valueType ... value);
+	void SetPropValue(const char* propName, float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
+	void SetTextureValue(const char* propName, float x = 0.0f);
 
 	void SetShader(Shader sourceShader);
 	void UseMaterial();
@@ -28,33 +28,12 @@ private:
 	GLint numActiveUniforms = 0;
 	vector<MaterialProperty> matProps;
 	vector<MaterialProperty> matTextures;
-	std::vector<std::string> propNames;
-	std::vector<GLint> propType;
-	std::vector<std::string> textureNames;
-	std::vector<GLuint> textureLocations;
-	std::vector<GLuint> textureTypes;
+
 
 	void GetAllProps();
 	void AllocateTextures();
 	void BindTextures();
 	void SendValueToProgram();
-	MaterialProperty GetMatProp(string propName);
+	MaterialProperty* GetMatProp(string propName, vector<MaterialProperty>* props);
 };
-
-template<typename... valueType>
-inline void Material::SetPropValue(const char* propName, valueType ... value)
-{
-	MaterialProperty matProp = GetMatProp(propName);
-
-	if (matProp.propName != "")
-	{
-		matProp.SetPropValue(value);
-	}
-	else
-	{
-		printf("Property '%s' doesn't exist!", propName);
-	}
-
-	return;
-}
 
