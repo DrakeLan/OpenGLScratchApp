@@ -415,6 +415,12 @@ void Shader::SetOmniLightMatrices(std::vector<glm::mat4>lightMatrices)
 	}
 }
 
+void Shader::SetModel(glm::mat4* value)
+{
+	GLuint modelLocation = GetModelLocation();
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(*value));
+}
+
 void Shader::SetFloat(const char* propertyName, GLfloat value)
 {
 	GLint uniformFloat = glGetUniformLocation(shaderID, propertyName);

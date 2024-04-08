@@ -211,6 +211,18 @@ void Material::UseMaterial()
 	SendValueToProgram();
 }
 
+void Material::UseMaterial(glm::mat4 modelMatrix)
+{
+	shader->UseShader();
+
+	shader->SetModel(&modelMatrix);
+
+	BindTextures();
+	AllocateTextures();
+	SendValueToProgram();
+}
+
+
 void Material::UseMaterial(GLuint specularIntensityLocation, GLuint shininessLocation)
 {
 	glUniform1f(specularIntensityLocation, specularIntensity);

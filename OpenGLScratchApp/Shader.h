@@ -54,6 +54,8 @@ public:
 	void SetOmniLightMatrices(std::vector<glm::mat4>lightMatrices);
 
 	//General set function
+	void SetModel(glm::mat4* value);
+
 	void SetFloat(const char* propertyName, GLfloat value);
 	void SetVectorThree(const char* propertyName, glm::vec3* value);
 	void SetMatrix(const char* propertyName, glm::mat4* value);

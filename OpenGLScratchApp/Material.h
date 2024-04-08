@@ -16,6 +16,7 @@ public:
 
 	void SetShader(Shader sourceShader);
 	void UseMaterial();
+	void UseMaterial(glm::mat4 modelMatrix);
 	void UseMaterial(GLuint specularIntensityLocation, GLuint shininessLocation);
 
 	~Material();

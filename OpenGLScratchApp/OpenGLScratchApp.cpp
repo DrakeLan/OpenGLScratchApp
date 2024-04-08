@@ -646,21 +646,18 @@ void InstancingPass()
 //To DO: Standarlize scene render pass
 void PBRPass()
 {
-	pbrMaterial.UseMaterial();
-	
-	uniformModel = basicPBRShader.GetModelLocation();
-	
-	basicPBRShader.SetVectorThree("viewPosition", &cameraPos);
-
-//To Do: Make light data in UBO
-	basicPBRShader.setDirectionalLight(&mainLight);
-
 	glm::mat4 model(1.0f);
-
 	//TRS
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
-	glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+
+	pbrMaterial.UseMaterial(model);
 	
+	//To Do: Make camera data in UBO
+	basicPBRShader.SetVectorThree("viewPosition", &cameraPos);
+
+	//To Do: Make light data in UBO
+	basicPBRShader.setDirectionalLight(&mainLight);
+
 	//meshList[2]->RenderMesh();
 	blackhawk.RenderModel();
 
