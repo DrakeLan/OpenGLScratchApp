@@ -1,5 +1,9 @@
 #include "Transform.h"
 
+Transform::Transform()
+{
+}
+
 glm::mat4 Transform::getLocalModelMatrix()
 {
     const glm::mat4 transformX = glm::rotate(glm::mat4(1.0f),

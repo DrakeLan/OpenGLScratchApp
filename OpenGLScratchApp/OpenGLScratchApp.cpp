@@ -27,6 +27,7 @@
 #include "Model.h"
 #include "RenderTexture.h"
 #include "IBLRender.h"
+#include "Entity.h"
 
 // Window dimensions
 const GLuint windowWidth = 1366;
@@ -43,6 +44,8 @@ uniformTessParam = 0, uniformTessHieght = 0, uniformDebugFlag = 0;
 GLuint uniformMetallic = 0, uniformRoughness = 0, uniformAO = 0;
 
 UniformBufferObject globalMatrixUBO;
+UniformBufferObject camerasUBO;
+UniformBufferObject lightsUBO;
 UniformBufferObject instancingMatrixUBO;
 UniformBufferObject instancingColorUBO;
 
@@ -79,6 +82,8 @@ Material shinyMaterial;
 Material dullMaterial;
 Material PlainMaterial;
 Material pbrMaterial;
+
+Entity sphereEntity;
 
 Model xwing;
 Model blackhawk;
@@ -815,6 +820,13 @@ int main()
 	pbrMaterial.SetTextureValue("irradianceMap", irradianceTexture->GetTextureID());
 	pbrMaterial.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
 	pbrMaterial.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
+
+	//Scene Manager
+	sphereEntity = Entity();
+	sphereEntity.transform = Transform();
+	sphereEntity.transform.computeModelMatrix();
+	sphereEntity.LoadModel("Models/Sphere.obj");
+	sphereEntity.material = pbrMaterial;
 
 	CreatBaseRenderTarget(windowWidth, windowHeight);
 	
