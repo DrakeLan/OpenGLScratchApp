@@ -7,7 +7,6 @@ in vec3 PositionWS;
 
 out vec4 FragColor; 
 
-
 struct Light
 {
 	vec3 color;
@@ -21,8 +20,20 @@ struct DirectionalLight
 	vec3 direction;
 };
 
+layout(std140) uniform cameraDataBlock
+{
+    vec3 position;
+    vec3 direction;
+}block_camera;
 
-uniform vec3 viewPosition;
+layout(std140) uniform lightDataBlock
+{
+    vec3 color;
+	float ambientIntensity;
+	float diffuseIntensity;
+	vec3 direction;
+}block_light;
+
 uniform float metallic;
 uniform float roughness;
 uniform float ao;
@@ -81,9 +92,9 @@ void main()
 	float safeRoughness = max(0.045, roughness);
 
 	//Base vectors
-	vec3 L = -normalize(directionalLight.direction);
+	vec3 L = -normalize(block_light.direction);
 	vec3 N = normalize(NormalWS);
-	vec3 V = normalize(viewPosition - PositionWS);
+	vec3 V = normalize(block_camera.position - PositionWS);
 	vec3 H = normalize(V + L);
 
 	float NdotL = max(dot(N, L), 0.0);
@@ -106,7 +117,7 @@ void main()
 	kD *= 1.0 - metallic;
 
 	//Direct Final Result
-	vec3 directLight = (kD * albedo/PI + directSpec) * directionalLight.base.color * NdotL;
+	vec3 directLight = (kD * albedo/PI + directSpec) * block_light.color * NdotL;
 
 	//Indrect Specular
 	vec3 idkS = fresnelSchlickRoughness(max(dot(N, V), 0.0), F0, safeRoughness);

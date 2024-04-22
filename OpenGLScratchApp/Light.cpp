@@ -17,6 +17,21 @@ Light::Light(GLfloat shadowWidth, GLfloat shadowHeight, GLfloat red, GLfloat gre
 	diffuseIntensity = dIntensity;
 }
 
+glm::vec3 Light::GetColor()
+{
+	return color;
+}
+
+GLfloat* Light::GetAmientInensity()
+{
+	return &ambientIntensity;
+}
+
+GLfloat* Light::GetDiffuseIntensity()
+{
+	return &diffuseIntensity;
+}
+
 Light::~Light()
 {
 }

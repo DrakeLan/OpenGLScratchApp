@@ -13,6 +13,8 @@ public:
 	void UseLight(GLfloat ambientIntensityLocation, GLfloat ambientColorLocation,
 		GLfloat diffuseIntensityLocation, GLfloat dirctionLocation);
 
+	glm::vec3 GetDirection();
+
 	glm::mat4 CalculateLightTransform();
 
 	~DirectionalLight();

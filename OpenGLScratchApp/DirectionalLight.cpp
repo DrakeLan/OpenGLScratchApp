@@ -27,6 +27,11 @@ void DirectionalLight::UseLight(GLfloat ambientIntensityLocation, GLfloat ambien
 	glUniform1f(diffuseIntensityLocation, diffuseIntensity);
 }
 
+glm::vec3 DirectionalLight::GetDirection()
+{
+	return direction;
+}
+
 glm::mat4 DirectionalLight::CalculateLightTransform()
 {
 	return lightProj * glm::lookAt(-direction, glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));

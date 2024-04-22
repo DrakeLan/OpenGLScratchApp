@@ -44,8 +44,8 @@ uniformTessParam = 0, uniformTessHieght = 0, uniformDebugFlag = 0;
 GLuint uniformMetallic = 0, uniformRoughness = 0, uniformAO = 0;
 
 UniformBufferObject globalMatrixUBO;
-UniformBufferObject camerasUBO;
-UniformBufferObject lightsUBO;
+UniformBufferObject cameraUBO;
+UniformBufferObject directionLightsUBO;
 UniformBufferObject instancingMatrixUBO;
 UniformBufferObject instancingColorUBO;
 
@@ -231,9 +231,25 @@ void createEnvPlane()
 void CreateGlobalMatrixUBO()
 {
 	globalMatrixUBO = UniformBufferObject();
-	globalMatrixUBO.createUBO(sizeof(glm::mat4) * 2, GL_STREAM_DRAW);
+	globalMatrixUBO.createUBO(sizeof(glm::mat4) * 2, GL_STATIC_DRAW);
 	globalMatrixUBO.bindBufferBaseToBindingPoint(MATRICES_BLOCK_BINDING_POINT);
 
+}
+
+void CreateCameraDataUBO()
+{
+	cameraUBO = UniformBufferObject();
+	cameraUBO.createUBO(sizeof(glm::vec3) * 2, GL_STATIC_DRAW);
+	cameraUBO.bindBufferBaseToBindingPoint(CAMERA_DATA_BINDING_POINT);
+}
+
+void CreateDirLightsDataUBO(int lightCounts)
+{
+	glm::uint lightDataSize = sizeof(glm::vec3) * 2 + sizeof(GLfloat) * 2;
+
+	directionLightsUBO = UniformBufferObject();
+	directionLightsUBO.createUBO(lightDataSize, GL_STATIC_DRAW);
+	directionLightsUBO.bindBufferBaseToBindingPoint(DIRECTION_LIGHTS_BINDING_POINT);
 }
 
 void CreateInstancingUBO(const int amounts)
@@ -305,6 +321,25 @@ void SetGlobalMatrixUBO(glm::mat4 projectionMatrix, glm::mat4 viewMatrix)
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+void SetCameraDataUBO(Camera* mainCam)
+{
+	cameraUBO.setBufferData(0, glm::value_ptr(mainCam->getCamPostion()), sizeof(glm::vec3));
+	cameraUBO.setBufferData(sizeof(glm::vec3), glm::value_ptr(mainCam->getCamDirection()), sizeof(glm::vec3));
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void SetDirLightsDataUBO(DirectionalLight* light)
+{
+	glm::uint offset = 0;
+	directionLightsUBO.setBufferData(0, glm::value_ptr(light->GetColor()), sizeof(glm::vec3));
+	offset += sizeof(glm::vec3);
+	directionLightsUBO.setBufferData(offset, light->GetAmientInensity(), sizeof(GLfloat));
+	offset += sizeof(GLfloat);
+	directionLightsUBO.setBufferData(offset, light->GetDiffuseIntensity(), sizeof(GLfloat));
+	offset += sizeof(GLfloat);
+	directionLightsUBO.setBufferData(offset, glm::value_ptr(light->GetDirection()), sizeof(glm::vec3));
+}
+
 void CreatBaseRenderTarget(GLuint targetWidth, GLuint targetHeight)
 {
 	baseRT.Init_SRGBA(targetWidth, targetHeight);
@@ -337,6 +372,8 @@ void CreateShaders()
 	basicPBRShader = Shader();
 	basicPBRShader.CreateFromFiles("Shaders/basic_PBR.vert", "Shaders/basic_PBR.frag");
 	basicPBRShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
+	basicPBRShader.bindUniformBlockToBindingPoint("cameraDataBlock", CAMERA_DATA_BINDING_POINT);
+	basicPBRShader.bindUniformBlockToBindingPoint("lightDataBlock", DIRECTION_LIGHTS_BINDING_POINT);
 
 	envMapShader = Shader();
 	envMapShader.CreateFromFiles("Shaders/enviroment_map.vert", "Shaders/enviroment_map.frag");
@@ -656,9 +693,6 @@ void PBRPass()
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 
 	pbrMaterial.UseMaterial(model);
-	
-	//To Do: Make camera data in UBO
-	basicPBRShader.SetVectorThree("viewPosition", &cameraPos);
 
 	//To Do: Make light data in UBO
 	basicPBRShader.setDirectionalLight(&mainLight);
@@ -705,7 +739,8 @@ int main()
 	createEnvPlane();
 
 	CreateGlobalMatrixUBO();
-
+	CreateCameraDataUBO();
+	CreateDirLightsDataUBO(1);
 	CreateInstancingUBO(1000);
 
 	CreateShaders();
@@ -852,6 +887,8 @@ int main()
 		cameraPos = camera.getCamPostion();
 
 		SetGlobalMatrixUBO(projection, camera.calculateViewMatrix());
+		SetCameraDataUBO(&camera);
+		SetDirLightsDataUBO(&mainLight);
 
 		DirectinalShadowMapPass(&mainLight);
 

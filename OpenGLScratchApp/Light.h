@@ -14,6 +14,10 @@ public:
 
 	ShadowMap* GetShadowMap() { return shadowMap; }
 
+	glm::vec3 GetColor();
+	GLfloat* GetAmientInensity();
+	GLfloat* GetDiffuseIntensity();
+
 	~Light();
 
 protected:
