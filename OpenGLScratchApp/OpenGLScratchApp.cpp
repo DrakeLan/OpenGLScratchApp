@@ -906,12 +906,14 @@ int main()
 		//ReflectionObjPass();
 		//TessellationOp(mainWindow.getsKeys());
 		//TessellationObjectPass(tessParam, tessHeight);
-		PBRPass();
+		//PBRPass();
 		//InstancingPass();
+		sphereEntity.RenderEntity();
 
 		PtoWMat = glm::mat4(glm::inverse(camera.calculateOriginalViewMatrix())) * glm::mat4(inversPro);
 		
 		EnvMapPass(PtoWMat);
+		
 
 		OnScreenPass();
 
