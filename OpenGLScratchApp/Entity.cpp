@@ -19,6 +19,6 @@ void Entity::RenderEntity()
     while (lastEntity->children.size())
     {
         lastEntity->material.UseMaterial(lastEntity->transform.modelMatrix);
-        lastEntity->RenderModel();;
+        lastEntity->RenderModel();
     }
 }

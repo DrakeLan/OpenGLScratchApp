@@ -245,7 +245,7 @@ void CreateCameraDataUBO()
 
 void CreateDirLightsDataUBO(int lightCounts)
 {
-	glm::uint lightDataSize = sizeof(glm::vec3) * 2 + sizeof(GLfloat) * 2;
+	glm::uint lightDataSize = sizeof(glm::vec4) * 2 + sizeof(GLfloat) * 2;
 
 	directionLightsUBO = UniformBufferObject();
 	directionLightsUBO.createUBO(lightDataSize, GL_STATIC_DRAW);
@@ -332,12 +332,13 @@ void SetDirLightsDataUBO(DirectionalLight* light)
 {
 	glm::uint offset = 0;
 	directionLightsUBO.setBufferData(0, glm::value_ptr(light->GetColor()), sizeof(glm::vec3));
-	offset += sizeof(glm::vec3);
+	offset += sizeof(glm::vec4);
+	directionLightsUBO.setBufferData(offset, glm::value_ptr(light->GetDirection()), sizeof(glm::vec3));
+	offset += sizeof(glm::vec4);
 	directionLightsUBO.setBufferData(offset, light->GetAmientInensity(), sizeof(GLfloat));
 	offset += sizeof(GLfloat);
 	directionLightsUBO.setBufferData(offset, light->GetDiffuseIntensity(), sizeof(GLfloat));
-	offset += sizeof(GLfloat);
-	directionLightsUBO.setBufferData(offset, glm::value_ptr(light->GetDirection()), sizeof(glm::vec3));
+
 }
 
 void CreatBaseRenderTarget(GLuint targetWidth, GLuint targetHeight)
@@ -693,9 +694,6 @@ void PBRPass()
 	model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 
 	pbrMaterial.UseMaterial(model);
-
-	//To Do: Make light data in UBO
-	basicPBRShader.setDirectionalLight(&mainLight);
 
 	//meshList[2]->RenderMesh();
 	blackhawk.RenderModel();

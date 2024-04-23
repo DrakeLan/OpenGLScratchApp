@@ -29,16 +29,14 @@ layout(std140) uniform cameraDataBlock
 layout(std140) uniform lightDataBlock
 {
     vec3 color;
+	vec3 direction;
 	float ambientIntensity;
 	float diffuseIntensity;
-	vec3 direction;
 }block_light;
 
 uniform float metallic;
 uniform float roughness;
 uniform float ao;
-
-uniform DirectionalLight directionalLight;
 
 uniform samplerCube irradianceMap;
 uniform samplerCube importanceSampleMap;
