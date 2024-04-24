@@ -25,6 +25,10 @@ class Entity :
 
 		void RenderEntity();
 
+	private:
+		void EntityDraw();
+		void EntityTraverse(Entity* theEntity);
+
 };
 
 template<typename ...TArgs>

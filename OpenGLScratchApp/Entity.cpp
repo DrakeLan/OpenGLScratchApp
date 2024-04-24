@@ -15,24 +15,26 @@ void Entity::updateSelfAndChild()
 
 void Entity::RenderEntity()
 {
-    /*Entity* curEntity = this;
-    std::list<std::unique_ptr<Entity>>::iterator it;
-    for (it = this->children.begin(); it != this->children.end(); ++it) {
-        curEntity = it->get();
-        if (curEntity->children.size() > 0)
-        {
+    EntityTraverse(this);
+}
 
-        }
-    }
-
-
-    Entity* lastEntity = this;
-    while (lastEntity->children.size())
-    {
-        lastEntity->material.UseMaterial(lastEntity->transform.modelMatrix);
-        lastEntity->RenderModel();
-        lastEntity = lastEntity->children.back().get();
-    }*/
+void Entity::EntityDraw()
+{
     this->material.UseMaterial(this->transform.modelMatrix);
     this->RenderModel();
+}
+
+void Entity::EntityTraverse(Entity* theEntity)
+{
+    theEntity->EntityDraw();
+   
+    if (theEntity->children.size() > 0)
+    {
+        Entity* curEntity = theEntity;
+        std::list<std::unique_ptr<Entity>>::iterator it;
+        for (it = this->children.begin(); it != this->children.end(); ++it) {
+            curEntity = it->get();
+            EntityTraverse(curEntity);
+        }
+    }
 }
