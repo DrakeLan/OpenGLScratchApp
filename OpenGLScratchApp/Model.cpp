@@ -4,6 +4,11 @@ Model::Model()
 {
 }
 
+Model::Model(bool tangentBool)
+{
+	tangentFlag = tangentBool;
+}
+
 void Model::RenderModel()
 {
 
@@ -54,6 +59,19 @@ void Model::LoadModel(const std::string & fileName)
 	LoadMaterial(scene);
 }
 
+std::vector<Mesh*> Model::GetMeshList()
+{
+	if (meshList.size() > 0)
+	{
+		return meshList;
+	}
+	else
+	{
+		return std::vector<Mesh*>();
+	}
+	
+}
+
 void Model::LoadNode(aiNode * node, const aiScene * scene)
 {
 	for (size_t i = 0; i < node->mNumMeshes; i++)
@@ -85,6 +103,11 @@ void Model::LoadMesh(aiMesh * mesh, const aiScene * scene)
 			vertices.insert(vertices.end(), { 0.0f, 0.0f });
 		}
 		vertices.insert(vertices.end(), { mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z });
+
+		if (tangentFlag)
+		{
+			vertices.insert(vertices.end(), { mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z });
+		}
 	}
 
 	for (size_t i = 0; i < mesh->mNumFaces; i++)
@@ -97,7 +120,7 @@ void Model::LoadMesh(aiMesh * mesh, const aiScene * scene)
 	}
 
 	Mesh* newMesh = new Mesh();
-	newMesh->CreateMesh(&vertices[0], &indices[0], vertices.size(), indices.size());
+	newMesh->CreateMesh(&vertices[0], &indices[0], vertices.size(), indices.size(), tangentFlag);
 	meshList.push_back(newMesh);
 	meshToTex.push_back(mesh->mMaterialIndex);
 }
@@ -136,7 +159,7 @@ void Model::LoadMaterial(const aiScene * scene)
 		if (!textureList[i])
 		{
 			textureList[i] = new Textrue("Textures/plain.png");
-			textureList[i]->LoadTextrueAlpha();
+			textureList[i]->LoadTextrue();
 
 		}
 	}

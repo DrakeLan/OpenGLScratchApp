@@ -39,7 +39,9 @@ Textrue::Textrue(const char* filelocs[])
 
 
 bool Textrue::LoadTextrue(bool srgbFlag)
-{
+{	
+	GLenum imageChannel = GL_RGB;
+
 	if (srgbFlag)
 	{
 		texFormat = GL_SRGB;
@@ -64,7 +66,29 @@ bool Textrue::LoadTextrue(bool srgbFlag)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, texFormat, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, texData);
+	switch (bitDepth)
+	{
+		case 1:
+			imageChannel = GL_R;
+			break;
+
+		case 2:
+			imageChannel = GL_RG;
+			break;
+
+		case 3:
+			imageChannel = GL_RGB;
+			break;
+
+		case 4:
+			imageChannel = GL_RGBA;
+			break;
+
+		default:
+			break;
+	}
+
+	glTexImage2D(GL_TEXTURE_2D, 0, imageChannel, width, height, 0, imageChannel, GL_UNSIGNED_BYTE, texData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -75,42 +99,6 @@ bool Textrue::LoadTextrue(bool srgbFlag)
 }
 
 
-bool Textrue::LoadTextrueAlpha(bool srgbFlag)
-{
-	if (srgbFlag)
-	{
-		texFormat = GL_SRGB;
-	}
-	else
-	{
-		texFormat = GL_RGB;
-	}
-
-	unsigned char *texData = stbi_load(fileLocation, &width, &height, &bitDepth, 0);
-
-	if (!texData)
-	{
-		printf("Filed to find: %s\n", fileLocation);
-		return false;
-	}
-
-	glGenTextures(1, &textrueID);
-	glBindTexture(GL_TEXTURE_2D, textrueID);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texData);
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	stbi_image_free(texData);
-
-	return true;
-}
 
 bool Textrue::LoadTextrueHDR()
 {

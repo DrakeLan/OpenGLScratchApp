@@ -1,0 +1,36 @@
+# Blender 3.4.1 MTL File: 'Camera_01_4k.blend'
+# www.blender.org
+
+newmtl Camera_01_body
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/rxlan/Downloads/textures/Camera_01_body_diff_4k.png
+map_Ns C:/Users/rxlan/Downloads/textures/Camera_01_body_roughness_4k.png
+map_refl C:/Users/rxlan/Downloads/textures/Camera_01_body_metallic_4k.png
+map_Bump -bm 1.000000 C:/Users/rxlan/Downloads/textures/Camera_01_body_nor_gl_4k.png
+
+newmtl Camera_01_lens
+Ns 1000.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+
+newmtl Camera_01_strap
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd C:/Users/rxlan/Downloads/textures/Camera_01_strap_diff_4k.png
+map_Ns C:/Users/rxlan/Downloads/textures/Camera_01_strap_roughness_4k.png
+map_refl C:/Users/rxlan/Downloads/textures/Camera_01_strap_metallic_4k.png
+map_Bump -bm 1.000000 C:/Users/rxlan/Downloads/textures/Camera_01_strap_nor_gl_4k.png

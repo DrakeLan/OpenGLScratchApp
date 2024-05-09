@@ -5,15 +5,15 @@
 #include <list>
 #include <memory>
 
-class Entity :
-    public Model
+class Entity
 {
     public:
 
 		Transform transform;
-		Material material;
+		std::vector<Material*> materialList;
+		std::vector<Mesh*> meshList;
 
-		Entity() : Model() {}
+		Entity();
 
 		std::list<std::unique_ptr<Entity>> children;
 		Entity* parent = nullptr;

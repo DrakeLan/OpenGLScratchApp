@@ -14,8 +14,10 @@ class Model
 {
 public:
 	Model();
+	Model(bool tangentBool);
 
 	void LoadModel(const std::string& fileName);
+	std::vector<Mesh*> GetMeshList();
 	void RenderModel();
 	void RenderModelInstancing(GLsizei instancingCount);
 	void clearModel();
@@ -23,6 +25,8 @@ public:
 	~Model();
 
 private:
+
+	bool tangentFlag = false;
 
 	void LoadNode(aiNode *node, const aiScene *scene);
 	void LoadMesh(aiMesh *mesh, const aiScene *scene);

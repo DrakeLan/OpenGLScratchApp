@@ -6,7 +6,7 @@ class Mesh
 {
 public:
 	Mesh();
-	void CreateMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVer, unsigned int numberOfIndices);
+	void CreateMesh(GLfloat *vertices, unsigned int *indices, unsigned int numOfVer, unsigned int numberOfIndices, bool tangentFlag = false);
 	void RenderMesh();
 	void RenderMeshasPatch();
 	void RenderMeshInstancing(GLsizei instancingCount);

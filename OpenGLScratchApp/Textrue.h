@@ -12,7 +12,6 @@ public:
 	Textrue(const char* filelocs[]);
 
 	bool LoadTextrue(bool srgbFlag = true);
-	bool LoadTextrueAlpha(bool srgbFlag = true);
 	bool LoadTextrueHDR();
 	bool LoadCubeMap(bool srgbFlag = true);
 

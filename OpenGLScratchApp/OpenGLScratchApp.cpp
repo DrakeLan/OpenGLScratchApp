@@ -63,6 +63,7 @@ Shader basicTessellationShader;
 Shader basicInstancingShader;
 
 Shader basicPBRShader;
+Shader standardPBRShader;
 
 Shader copyShader;
 
@@ -83,12 +84,39 @@ Material dullMaterial;
 Material PlainMaterial;
 Material pbrMaterial;
 
+//Camera Model Resources (need serializing)
+Material standardPBRMatA;
+Material standardPBRMatB;
+Material standardPBRMatC;
+Material standardPBRMatD;
+
+Textrue diffuseTextureA;
+Textrue mettallicTextureA;
+Textrue roughnessTextureA;
+Textrue normalMapA;
+
+Textrue diffuseTextureB;
+Textrue mettallicTextureB;
+Textrue roughnessTextureB;
+Textrue normalMapB;
+
+Textrue diffuseTextureC;
+Textrue mettallicTextureC;
+Textrue roughnessTextureC;
+Textrue normalMapC;
+
+Textrue diffuseTextureD;
+Textrue mettallicTextureD;
+Textrue roughnessTextureD;
+Textrue normalMapD;
+
 Entity sphereEntity;
 
 Model xwing;
 Model blackhawk;
 Model ThirdOne;
 Model TeaPot;
+Model CameraModel;
 
 DirectionalLight mainLight;
 PointLight pointLights[MAX_POINT_LIGHTS];
@@ -375,6 +403,12 @@ void CreateShaders()
 	basicPBRShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
 	basicPBRShader.bindUniformBlockToBindingPoint("cameraDataBlock", CAMERA_DATA_BINDING_POINT);
 	basicPBRShader.bindUniformBlockToBindingPoint("lightDataBlock", DIRECTION_LIGHTS_BINDING_POINT);
+
+	standardPBRShader = Shader();
+	standardPBRShader.CreateFromFiles("Shaders/standard_PBR.vert", "Shaders/standard_PBR.frag");
+	standardPBRShader.bindUniformBlockToBindingPoint("globalMatrixBlock", MATRICES_BLOCK_BINDING_POINT);
+	standardPBRShader.bindUniformBlockToBindingPoint("cameraDataBlock", CAMERA_DATA_BINDING_POINT);
+	standardPBRShader.bindUniformBlockToBindingPoint("lightDataBlock", DIRECTION_LIGHTS_BINDING_POINT);
 
 	envMapShader = Shader();
 	envMapShader.CreateFromFiles("Shaders/enviroment_map.vert", "Shaders/enviroment_map.frag");
@@ -749,13 +783,13 @@ int main()
 	camera = Camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.5f);
 
 	brickTextrue = Textrue((char*)("Textures/brick.png"));
-	brickTextrue.LoadTextrueAlpha();
+	brickTextrue.LoadTextrue();
 	dirtTextrue = Textrue((char*)("Textures/BlacketTilling.png"));
-	dirtTextrue.LoadTextrueAlpha();
+	dirtTextrue.LoadTextrue();
 	PlainTextrue = Textrue((char*)("Textures/plain.png"));
-	PlainTextrue.LoadTextrueAlpha();
+	PlainTextrue.LoadTextrue();
 	grassTextrue = Textrue((char*)("Textures/GrassTilling.png"));
-	grassTextrue.LoadTextrueAlpha();
+	grassTextrue.LoadTextrue();
 	heightTextrue = Textrue((char*)("Textures/teapot_disp.png"));
 	heightTextrue.LoadTextrue();
 	iblRadianceTexture = Textrue((char*)("Textures/table_mountain_1_puresky_4k.hdr"));
@@ -763,6 +797,18 @@ int main()
 	const char* cubeMapPath[6] = { "Textures/posx.jpg", "Textures/negx.jpg", "Textures/posy.jpg", "Textures/negy.jpg", "Textures/posz.jpg", "Textures/negz.jpg" };
 	CubeMap = Textrue(cubeMapPath);
 	CubeMap.LoadCubeMap();
+
+	//Load camera model textures
+	diffuseTextureA = Textrue((char*)("Textures/Camera_01_body_diff_4k.png"));
+	diffuseTextureA.LoadTextrue();
+	mettallicTextureA = Textrue((char*)("Textures/Camera_01_body_metallic_4k.png"));
+	mettallicTextureA.LoadTextrue();
+	roughnessTextureA = Textrue((char*)("Textures/Camera_01_body_roughness_4k.png"));
+	roughnessTextureA.LoadTextrue();
+	normalMapA = Textrue((char*)("Textures/Camera_01_body_nor_gl_4k.png"));
+	normalMapA.LoadTextrue();
+
+
 
 	xwing = Model();
 	xwing.LoadModel("Models/x-wing.obj");
@@ -775,6 +821,9 @@ int main()
 
 	TeaPot = Model();
 	TeaPot.LoadModel("Models/teapot.obj");
+
+	CameraModel = Model();
+	CameraModel.LoadModel("Models/Camera.obj");
 
 
 	mainLight = DirectionalLight(2048, 2048, 
@@ -854,12 +903,21 @@ int main()
 	pbrMaterial.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
 	pbrMaterial.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
 
+	standardPBRMatA = Material(&standardPBRShader);
+	standardPBRMatA.SetTextureValue("diffuseMap", diffuseTextureA.getTextrueID());
+	standardPBRMatA.SetTextureValue("metallicMap", mettallicTextureA.getTextrueID());
+	standardPBRMatA.SetTextureValue("roughnessMap", roughnessTextureA.getTextrueID());
+	standardPBRMatA.SetTextureValue("normalMap", normalMapA.getTextrueID());
+	standardPBRMatA.SetTextureValue("irradianceMap", irradianceTexture->GetTextureID());
+	standardPBRMatA.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
+	standardPBRMatA.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
+
 	//Scene Manager
 	sphereEntity = Entity();
 	sphereEntity.transform = Transform();
 	sphereEntity.transform.computeModelMatrix();
-	sphereEntity.LoadModel("Models/Sphere.obj");
-	sphereEntity.material = pbrMaterial;
+	sphereEntity.meshList = CameraModel.GetMeshList();
+	sphereEntity.materialList.push_back(&standardPBRMatA);
 
 	CreatBaseRenderTarget(windowWidth, windowHeight);
 	
