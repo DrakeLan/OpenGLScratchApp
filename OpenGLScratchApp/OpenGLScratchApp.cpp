@@ -802,11 +802,11 @@ int main()
 	diffuseTextureA = Textrue((char*)("Textures/Camera_01_body_diff_4k.png"));
 	diffuseTextureA.LoadTextrue();
 	mettallicTextureA = Textrue((char*)("Textures/Camera_01_body_metallic_4k.png"));
-	mettallicTextureA.LoadTextrue();
+	mettallicTextureA.LoadTextrue(false);
 	roughnessTextureA = Textrue((char*)("Textures/Camera_01_body_roughness_4k.png"));
-	roughnessTextureA.LoadTextrue();
+	roughnessTextureA.LoadTextrue(false);
 	normalMapA = Textrue((char*)("Textures/Camera_01_body_nor_gl_4k.png"));
-	normalMapA.LoadTextrue();
+	normalMapA.LoadTextrue(false);
 
 
 

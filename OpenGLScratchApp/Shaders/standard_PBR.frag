@@ -101,7 +101,7 @@ void main()
 
 	//Normal Map
 	vec3 normal = texture(normalMap, TexCoord).xyz;
-	normal.y = 1.0 - normal.y;
+	//normal.y = 1.0 - normal.y;
 	normal = normal * 2.0 - 1.0;
 	normal = normalize(TBN * normal);
 	
