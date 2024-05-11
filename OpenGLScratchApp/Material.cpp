@@ -74,8 +74,11 @@ MaterialProperty* Material::GetMatProp(string propName, vector<MaterialProperty>
 				return &(props->at(i));
 			}
 		}
-		return  nullptr;
+		
 	}
+
+	return  nullptr;
+
 }
 
 

@@ -101,6 +101,7 @@ void main()
 
 	//Normal Map
 	vec3 normal = texture(normalMap, TexCoord).xyz;
+	normal.y = 1.0 - normal.y;
 	normal = normal * 2.0 - 1.0;
 	normal = normalize(TBN * normal);
 	
@@ -152,7 +153,5 @@ void main()
 	vec3 ambient  = (idkD * diffuse + specular) * ao; 
 
 	FragColor = vec4(directLight + ambient, 1.0);
-
-	FragColor.xyz = normal;
 																	    
 }

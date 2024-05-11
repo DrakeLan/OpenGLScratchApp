@@ -822,7 +822,7 @@ int main()
 	TeaPot = Model();
 	TeaPot.LoadModel("Models/teapot.obj");
 
-	CameraModel = Model();
+	CameraModel = Model(true);
 	CameraModel.LoadModel("Models/Camera.obj");
 
 
@@ -904,6 +904,7 @@ int main()
 	pbrMaterial.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
 
 	standardPBRMatA = Material(&standardPBRShader);
+	standardPBRMatA.SetPropValue("ao", 1.0f);
 	standardPBRMatA.SetTextureValue("diffuseMap", diffuseTextureA.getTextrueID());
 	standardPBRMatA.SetTextureValue("metallicMap", mettallicTextureA.getTextrueID());
 	standardPBRMatA.SetTextureValue("roughnessMap", roughnessTextureA.getTextrueID());
@@ -915,6 +916,7 @@ int main()
 	//Scene Manager
 	sphereEntity = Entity();
 	sphereEntity.transform = Transform();
+	sphereEntity.transform.scale *= 10.0f;
 	sphereEntity.transform.computeModelMatrix();
 	sphereEntity.meshList = CameraModel.GetMeshList();
 	sphereEntity.materialList.push_back(&standardPBRMatA);
