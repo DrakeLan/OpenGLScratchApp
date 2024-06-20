@@ -805,7 +805,7 @@ int main()
 	mettallicTextureA.LoadTextrue(false);
 	roughnessTextureA = Textrue((char*)("Textures/Camera_01_body_roughness_4k.png"));
 	roughnessTextureA.LoadTextrue(false);
-	normalMapA = Textrue((char*)("Textures/FlatNormal.png"));
+	normalMapA = Textrue((char*)("Textures/Camera_01_body_nor_gl_4k.png"));
 	normalMapA.LoadTextrue(false);
 
 
@@ -957,6 +957,7 @@ int main()
 	sphereEntity = Entity();
 	sphereEntity.transform = Transform();
 	sphereEntity.transform.scale *= 10.0f;
+	sphereEntity.transform.eulerRot.y = 180;
 	sphereEntity.transform.computeModelMatrix();
 	sphereEntity.meshList = CameraModel.GetMeshList();
 	sphereEntity.materialList.push_back(&standardPBRMatC);
