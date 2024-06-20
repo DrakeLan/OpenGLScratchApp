@@ -805,9 +805,27 @@ int main()
 	mettallicTextureA.LoadTextrue(false);
 	roughnessTextureA = Textrue((char*)("Textures/Camera_01_body_roughness_4k.png"));
 	roughnessTextureA.LoadTextrue(false);
-	normalMapA = Textrue((char*)("Textures/Camera_01_body_nor_gl_4k.png"));
+	normalMapA = Textrue((char*)("Textures/FlatNormal.png"));
 	normalMapA.LoadTextrue(false);
 
+
+	diffuseTextureB = Textrue((char*)("Textures/Camera_01_lens_body_diff_4k.png"));
+	diffuseTextureB.LoadTextrue();
+	mettallicTextureB = Textrue((char*)("Textures/Camera_01_lens_body_metallic_4k.png"));
+	mettallicTextureB.LoadTextrue(false);
+	roughnessTextureB = Textrue((char*)("Textures/Camera_01_lens_body_roughness_4k.png"));
+	roughnessTextureB.LoadTextrue(false);
+	normalMapB = Textrue((char*)("Textures/Camera_01_lens_body_nor_gl_4k.png"));
+	normalMapB.LoadTextrue(false);
+
+	diffuseTextureC = Textrue((char*)("Textures/Camera_01_strap_diff_4k.png"));
+	diffuseTextureC.LoadTextrue();
+	mettallicTextureC = Textrue((char*)("Textures/Camera_01_strap_metallic_4k.png"));
+	mettallicTextureC.LoadTextrue(false);
+	roughnessTextureC = Textrue((char*)("Textures/Camera_01_strap_roughness_4k.png"));
+	roughnessTextureC.LoadTextrue(false);
+	normalMapC = Textrue((char*)("Textures/Camera_01_strap_nor_gl_4k.png"));
+	normalMapC.LoadTextrue(false);
 
 
 	xwing = Model();
@@ -913,13 +931,39 @@ int main()
 	standardPBRMatA.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
 	standardPBRMatA.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
 
+	standardPBRMatB = Material(&standardPBRShader);
+	standardPBRMatB.SetPropValue("ao", 1.0f);
+	standardPBRMatB.SetTextureValue("diffuseMap", diffuseTextureB.getTextrueID());
+	standardPBRMatB.SetTextureValue("metallicMap", mettallicTextureB.getTextrueID());
+	standardPBRMatB.SetTextureValue("roughnessMap", roughnessTextureB.getTextrueID());
+	standardPBRMatB.SetTextureValue("normalMap", normalMapB.getTextrueID());
+	standardPBRMatB.SetTextureValue("irradianceMap", irradianceTexture->GetTextureID());
+	standardPBRMatB.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
+	standardPBRMatB.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
+
+	standardPBRMatC = Material(&standardPBRShader);
+	standardPBRMatC.SetPropValue("ao", 1.0f);
+	standardPBRMatC.SetTextureValue("diffuseMap", diffuseTextureC.getTextrueID());
+	standardPBRMatC.SetTextureValue("metallicMap", mettallicTextureC.getTextrueID());
+	standardPBRMatC.SetTextureValue("roughnessMap", roughnessTextureC.getTextrueID());
+	standardPBRMatC.SetTextureValue("normalMap", normalMapC.getTextrueID());
+	standardPBRMatC.SetTextureValue("irradianceMap", irradianceTexture->GetTextureID());
+	standardPBRMatC.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
+	standardPBRMatC.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
+
+
+
 	//Scene Manager
 	sphereEntity = Entity();
 	sphereEntity.transform = Transform();
 	sphereEntity.transform.scale *= 10.0f;
 	sphereEntity.transform.computeModelMatrix();
 	sphereEntity.meshList = CameraModel.GetMeshList();
+	sphereEntity.materialList.push_back(&standardPBRMatC);
+	sphereEntity.materialList.push_back(&standardPBRMatB);
+	sphereEntity.materialList.push_back(&standardPBRMatB);
 	sphereEntity.materialList.push_back(&standardPBRMatA);
+	sphereEntity.materialList.push_back(&standardPBRMatB);
 
 	CreatBaseRenderTarget(windowWidth, windowHeight);
 	

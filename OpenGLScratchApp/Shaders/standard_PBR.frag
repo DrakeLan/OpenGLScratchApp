@@ -152,6 +152,8 @@ void main()
 	//Indirect Final Result
 	vec3 ambient  = (idkD * diffuse + specular) * ao; 
 
-	FragColor = vec4(directLight + ambient, 1.0);
-																	    
+	FragColor = vec4(directLight + ambient, 1.0);	
+
+	//FragColor.xyz *= 0.0;
+	//FragColor.z = N.z;
 }
