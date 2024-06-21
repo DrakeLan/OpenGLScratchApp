@@ -19,10 +19,5 @@ void main()
 {
     vec2 uv = SampleSphericalMap(normalize(wPos)); // make sure to normalize localPos
     vec3 texColor = texture(equTexture, uv).rgb;
-
-    texColor = texColor / (texColor + vec3(1.0));
-    texColor = pow(texColor, vec3(1.0/2.2));
-    
     color = vec4(texColor, 1.0);
-    //color = vec4(1.0, 0.0, 0.0, 1.0);
 } 

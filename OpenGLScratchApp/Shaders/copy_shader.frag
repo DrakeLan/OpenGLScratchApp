@@ -10,8 +10,11 @@ const float gamma = 2.2;
 void main()																	
 {	
 					    	
-	color = texture(sourceTex, texcoord);
+	vec4 sourceColor = texture(sourceTex, texcoord);
+
+    //vec3 mapped = vec3(1.0) - exp(-sourceColor.rgb * 3.0);
 	
-    color.rgb = pow(color.rgb, vec3(1.0/gamma));
-																	    
+    //From linear to gamma
+    color.rgb = pow(sourceColor.rgb, vec3(1.0/gamma));
+												    
 }

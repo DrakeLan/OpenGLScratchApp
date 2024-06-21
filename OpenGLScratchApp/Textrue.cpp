@@ -40,16 +40,9 @@ Textrue::Textrue(const char* filelocs[])
 
 bool Textrue::LoadTextrue(bool srgbFlag)
 {	
-	GLenum imageChannel = GL_RGB;
+	GLenum internalFormat = GL_RGB;
+	GLenum format = GL_RGB;
 
-	if (srgbFlag)
-	{
-		texFormat = GL_SRGB;
-	}
-	else
-	{
-		texFormat = GL_RGB;
-	}
 	unsigned char *texData = stbi_load(fileLocation, &width, &height, &bitDepth, 0);
 
 	if (!texData)
@@ -69,26 +62,38 @@ bool Textrue::LoadTextrue(bool srgbFlag)
 	switch (bitDepth)
 	{
 		case 1:
-			imageChannel = GL_R;
+			internalFormat = GL_R;
+			format = GL_R;
 			break;
 
 		case 2:
-			imageChannel = GL_RG;
+			internalFormat = GL_RG;
+			format = GL_RG;
 			break;
 
 		case 3:
-			imageChannel = GL_RGB;
+			if (srgbFlag)
+			{
+				internalFormat = GL_SRGB8;
+				format = GL_RGB;
+			}
+			else
+			{
+				internalFormat = GL_RGB;
+				format = GL_RGB;
+			}
 			break;
 
 		case 4:
-			imageChannel = GL_RGBA;
+			internalFormat = GL_RGBA;
+			format = GL_RGBA;
 			break;
 
 		default:
 			break;
 	}
 
-	glTexImage2D(GL_TEXTURE_2D, 0, imageChannel, width, height, 0, imageChannel, GL_UNSIGNED_BYTE, texData);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, texData);
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glBindTexture(GL_TEXTURE_2D, 0);

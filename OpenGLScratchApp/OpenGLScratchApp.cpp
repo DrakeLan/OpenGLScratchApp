@@ -78,6 +78,8 @@ Textrue heightTextrue;
 Textrue CubeMap;
 Textrue iblRadianceTexture;
 
+Textrue GammaTestTex;
+
 
 Material shinyMaterial;
 Material dullMaterial;
@@ -805,7 +807,7 @@ int main()
 	mettallicTextureA.LoadTextrue(false);
 	roughnessTextureA = Textrue((char*)("Textures/Camera_01_body_roughness_4k.png"));
 	roughnessTextureA.LoadTextrue(false);
-	normalMapA = Textrue((char*)("Textures/FlatNormal.png"));
+	normalMapA = Textrue((char*)("Textures/Camera_01_body_nor_gl_4k.png"));
 	normalMapA.LoadTextrue(false);
 
 
@@ -827,6 +829,8 @@ int main()
 	normalMapC = Textrue((char*)("Textures/Camera_01_strap_nor_gl_4k.png"));
 	normalMapC.LoadTextrue(false);
 
+	GammaTestTex = Textrue((char*)("Textures/GammaTest.png"));
+	GammaTestTex.LoadTextrue(false);
 
 	xwing = Model();
 	xwing.LoadModel("Models/x-wing.obj");
@@ -845,7 +849,7 @@ int main()
 
 
 	mainLight = DirectionalLight(2048, 2048, 
-		1.0f, 1.0f, 1.0f,
+		0.0f, 0.0f, 0.0f,
 		0.1f, 0.6f,
 		0.0f, -15.0f, -10.0f);
 
