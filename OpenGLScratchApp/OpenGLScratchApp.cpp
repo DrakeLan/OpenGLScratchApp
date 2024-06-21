@@ -961,6 +961,7 @@ int main()
 	sphereEntity = Entity();
 	sphereEntity.transform = Transform();
 	sphereEntity.transform.scale *= 10.0f;
+	sphereEntity.transform.eulerRot.y = 180;
 	sphereEntity.transform.computeModelMatrix();
 	sphereEntity.meshList = CameraModel.GetMeshList();
 	sphereEntity.materialList.push_back(&standardPBRMatC);
