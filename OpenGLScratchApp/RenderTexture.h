@@ -9,6 +9,7 @@ class RenderTexture
 		RenderTexture();
 
 		bool Init_SRGBA(GLuint width, GLuint height);
+		bool Init_Linear(GLuint width, GLuint height);
 
 		void BindFBO();
 		void Clear();

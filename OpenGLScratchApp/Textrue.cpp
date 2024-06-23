@@ -75,17 +75,23 @@ bool Textrue::LoadTextrue(bool srgbFlag)
 			if (srgbFlag)
 			{
 				internalFormat = GL_SRGB8;
-				format = GL_RGB;
 			}
 			else
 			{
-				internalFormat = GL_RGB;
-				format = GL_RGB;
+				internalFormat = GL_RGB;	
 			}
+			format = GL_RGB;
 			break;
 
 		case 4:
-			internalFormat = GL_RGBA;
+			if (srgbFlag)
+			{
+				internalFormat = GL_SRGB8_ALPHA8;
+			}
+			else
+			{
+				internalFormat = GL_RGBA;
+			}
 			format = GL_RGBA;
 			break;
 

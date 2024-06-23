@@ -373,7 +373,7 @@ void SetDirLightsDataUBO(DirectionalLight* light)
 
 void CreatBaseRenderTarget(GLuint targetWidth, GLuint targetHeight)
 {
-	baseRT.Init_SRGBA(targetWidth, targetHeight);
+	baseRT.Init_Linear(targetWidth, targetHeight);
 
 }
 

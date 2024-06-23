@@ -95,13 +95,14 @@ void main()
 	//Surface parameters
 	vec3 albedo = vec3(1.0);
 	albedo = texture(diffuseMap, TexCoord).xyz;
+	//albedo = pow(albedo, vec3(2.2));
 	float metallic = texture(metallicMap, TexCoord).x;
 	float roughness = texture(roughnessMap, TexCoord).x;
 	float safeRoughness = max(0.045, roughness);
 
 	//Normal Map
 	vec3 normal = texture(normalMap, TexCoord).xyz;
-	//normal.y = 1.0 - normal.y;
+	
 	normal = normal * 2.0 - 1.0;
 	normal = normalize(TBN * normal);
 	
@@ -154,6 +155,5 @@ void main()
 
 	FragColor = vec4(directLight + ambient, 1.0);	
 
-	//FragColor.xyz *= 0.0;
-	//FragColor.z = N.z;
+	FragColor.xyz = albedo;
 }
