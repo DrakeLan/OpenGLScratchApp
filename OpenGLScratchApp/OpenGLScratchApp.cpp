@@ -970,7 +970,7 @@ int main()
 	sphereEntity.materialList.push_back(&standardPBRMatA);
 	sphereEntity.materialList.push_back(&standardPBRMatB);
 
-	CreatBaseRenderTarget(windowWidth, windowHeight);
+	CreatBaseRenderTarget(windowWidth * 2.0, windowHeight * 2.0);
 	
 	//loop until window close
 	while (!mainWindow.getShouldClose())
@@ -1025,6 +1025,7 @@ int main()
 		
 
 		OnScreenPass();
+		//sphereEntity.RenderEntity();
 
 		glUseProgram(0);
 
