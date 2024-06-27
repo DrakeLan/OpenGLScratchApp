@@ -9,13 +9,13 @@ IBLRender::IBLRender(GLfloat cubeWidth, GLfloat cubeHeight, GLfloat irraWidth, G
 	CalTransformMatrix();
 
 	envCubeMap = new IBLTexture();
-	envCubeMap->InitCube(cubeWidth, cubeHeight);
+	envCubeMap->InitCube(cubeWidth, cubeHeight, false, true);
 
 	irradianceMap = new IBLTexture();
-	irradianceMap->InitCube(irraWidth, irraHeight);
+	irradianceMap->InitCube(irraWidth, irraHeight, false, true);
 
 	importanceSampleMap = new IBLTexture();
-	importanceSampleMap->InitCube(irraWidth * 4, irraHeight * 4, true);
+	importanceSampleMap->InitCube(irraWidth * 4, irraHeight * 4, true, true);
 
 	brdfLUTMap = new IBLTexture();
 	brdfLUTMap->InitLUT(512, 512);

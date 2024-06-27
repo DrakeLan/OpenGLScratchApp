@@ -98,6 +98,7 @@ void main()
 	//albedo = pow(albedo, vec3(2.2));
 	float metallic = texture(metallicMap, TexCoord).x;
 	float roughness = texture(roughnessMap, TexCoord).x;
+	roughness = 0.0;
 	float safeRoughness = max(0.045, roughness);
 
 	//Normal Map
@@ -144,7 +145,7 @@ void main()
 	vec3 specular = importanceReflection * ( idkS * envBRDF.x + envBRDF.y);
 
 	//Indrect Diffuse
-	vec3 idkD = 1.0 - idkS;
+	vec3 idkD = vec3(1.0) - idkS;
 
 	vec3 irradiance = texture(irradianceMap, N).rgb;
 	vec3 diffuse    = irradiance * albedo;
@@ -155,5 +156,5 @@ void main()
 
 	FragColor = vec4(directLight + ambient, 1.0);	
 
-	FragColor.xyz = albedo;
+	//FragColor.xyz = normal;
 }

@@ -8,8 +8,13 @@ IBLTexture::IBLTexture()
     textureWidth = 0.0f;
 }
 
-bool IBLTexture::InitCube(GLuint width, GLuint height, bool mipFlag)
+bool IBLTexture::InitCube(GLuint width, GLuint height, bool mipFlag, bool HDRFlag)
 {
+	GLenum texFormat = GL_RGB;
+	if (HDRFlag)
+	{
+		texFormat = GL_RGB16F;
+	}
 	textureHeight = height;
 	textureWidth = width;
 
@@ -23,7 +28,7 @@ bool IBLTexture::InitCube(GLuint width, GLuint height, bool mipFlag)
 
 	for (size_t i = 0; i < 6; i++)
 	{
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, textureWidth, textureHeight, 0, GL_RGB, GL_FLOAT, nullptr);
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, texFormat, textureWidth, textureHeight, 0, GL_RGB, GL_FLOAT, nullptr);
 	}
 
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

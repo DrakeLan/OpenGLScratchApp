@@ -918,8 +918,8 @@ int main()
 	PlainMaterial = Material(1.0f, 256.0f);
 
 	pbrMaterial = Material(&basicPBRShader);
-	pbrMaterial.SetPropValue("metallic", 1.0f);
-	pbrMaterial.SetPropValue("roughness", 0.0f);
+	pbrMaterial.SetPropValue("metallic", 0.0f);
+	pbrMaterial.SetPropValue("roughness", 0.2f);
 	pbrMaterial.SetPropValue("ao", 1.0f);
 	pbrMaterial.SetTextureValue("irradianceMap", irradianceTexture->GetTextureID());
 	pbrMaterial.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
@@ -1025,7 +1025,6 @@ int main()
 		
 
 		OnScreenPass();
-		//sphereEntity.RenderEntity();
 
 		glUseProgram(0);
 

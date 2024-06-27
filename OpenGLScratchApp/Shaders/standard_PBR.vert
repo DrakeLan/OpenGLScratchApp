@@ -25,8 +25,8 @@ void main()
 {         
     TexCoord = uv;
     PositionWS = (model * vec4(Pos, 1.0)).xyz;
-    NormalWS = mat3(transpose(inverse(model))) * normal;
-    TangentWS = mat3(transpose(inverse(model))) * tangent;
+    NormalWS = normalize(mat3(transpose(inverse(model))) * normal);
+    TangentWS = normalize(mat3(transpose(inverse(model))) * tangent);
     BiTangengt = normalize(cross(NormalWS, TangentWS));
 
     TBN = mat3(TangentWS, BiTangengt, NormalWS);
