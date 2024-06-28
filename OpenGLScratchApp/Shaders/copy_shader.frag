@@ -27,5 +27,6 @@ void main()
     //From linear to gamma
     //color.rgb = pow(sourceColor.rgb, vec3(1.0/gamma));
     color.rgb = vec3(LinearToSRGB(sourceColor.r), LinearToSRGB(sourceColor.g), LinearToSRGB(sourceColor.b));
+    color.a = 1.0;
 												    
 }
