@@ -37,6 +37,7 @@ layout(std140) uniform lightDataBlock
 uniform float metallic;
 uniform float roughness;
 uniform float ao;
+uniform float alpha;
 
 uniform samplerCube irradianceMap;
 uniform samplerCube importanceSampleMap;
@@ -86,7 +87,7 @@ float GeometrySchlickGGX (float NdotL, float NdotV, float roughness){
 																			
 void main()																	
 {	
-	vec3 albedo = vec3(1.0, 0.0, 0.0);
+	vec3 albedo = vec3(1.0, 1.0, 1.0);
 	float safeRoughness = max(0.045, roughness);
 
 	//Base vectors
@@ -136,6 +137,6 @@ void main()
 	//Indirect Final Result
 	vec3 ambient  = (idkD * diffuse + specular) * ao; 
 
-	FragColor = vec4(directLight + ambient, 1.0);
+	FragColor = vec4(directLight + ambient, alpha);
 																	    
 }

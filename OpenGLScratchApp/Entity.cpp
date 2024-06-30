@@ -17,40 +17,26 @@ void Entity::updateSelfAndChild()
     }
 }
 
+void Entity::AddMaterial(Material* mat)
+{
+    materialList.push_back(mat);
+}
+
 void Entity::RenderEntity()
 {
+    RemapMeshAndMaterial();
     EntityTraverse(this);
 }
 
 
 void Entity::EntityDraw()
 {
-    if (materialList.size() > meshList.size())
+    for (size_t i = 0; i < meshList.size(); i++)
     {
-        for (size_t i = 0; i < materialList.size(); i++)
-        {
-            if (i < meshList.size())
-            {
-                materialList[i]->UseMaterial(this->transform.modelMatrix);
-                meshList[i]->RenderMesh();
-            }
-        }
-    }
-    else
-    {
-        for (size_t i = 0; i < meshList.size(); i++)
-        {
-            if (i < materialList.size())
-            {
-                materialList[i]->UseMaterial(this->transform.modelMatrix);
-                meshList[i]->RenderMesh();
-            }
-            else
-            {
-                materialList[0]->UseMaterial(this->transform.modelMatrix);
-                meshList[i]->RenderMesh();
-            }
-        }
+
+        materialList[i]->UseMaterial(this->transform.modelMatrix);
+        meshList[i]->RenderMesh();
+
     }
 
 }
@@ -68,4 +54,27 @@ void Entity::EntityTraverse(Entity* theEntity)
             EntityTraverse(curEntity);
         }
     }
+}
+
+void Entity::RemapMeshAndMaterial()
+{
+    unsigned int count = 0;
+    if (materialList.size() > meshList.size())
+    {
+        count = materialList.size() - meshList.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            meshList.push_back(meshList[0]);
+        }
+    }
+    else if (materialList.size() < meshList.size())
+    {
+        count = meshList.size() - materialList.size();
+        for (size_t i = 0; i < count; i++)
+        {
+            materialList.push_back(materialList[0]);
+        }
+
+    }
+
 }

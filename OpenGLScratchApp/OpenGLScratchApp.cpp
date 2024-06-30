@@ -924,6 +924,7 @@ int main()
 	pbrMaterial.SetPropValue("metallic", 0.0f);
 	pbrMaterial.SetPropValue("roughness", 0.2f);
 	pbrMaterial.SetPropValue("ao", 1.0f);
+	pbrMaterial.SetPropValue("alpha", 1.0f);
 	pbrMaterial.SetTextureValue("irradianceMap", irradianceTexture->GetTextureID());
 	pbrMaterial.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
 	pbrMaterial.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
@@ -958,6 +959,16 @@ int main()
 	standardPBRMatC.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
 	standardPBRMatC.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
 
+	standardPBRMatD = Material(&basicPBRShader);
+	standardPBRMatD.SetPropValue("metallic", 1.0f);
+	standardPBRMatD.SetPropValue("roughness", 0.0f);
+	standardPBRMatD.SetPropValue("ao", 1.0f);
+	standardPBRMatD.SetPropValue("alpha", 0.2f);
+	standardPBRMatD.SetTextureValue("irradianceMap", irradianceTexture->GetTextureID());
+	standardPBRMatD.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
+	standardPBRMatD.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
+
+
 
 
 	//Scene Manager
@@ -967,11 +978,11 @@ int main()
 	sphereEntity.transform.eulerRot.y = 180;
 	sphereEntity.transform.computeModelMatrix();
 	sphereEntity.meshList = CameraModel.GetMeshList();
-	sphereEntity.materialList.push_back(&standardPBRMatC);
-	sphereEntity.materialList.push_back(&standardPBRMatB);
-	sphereEntity.materialList.push_back(&standardPBRMatB);
-	sphereEntity.materialList.push_back(&standardPBRMatA);
-	sphereEntity.materialList.push_back(&standardPBRMatB);
+	sphereEntity.AddMaterial(&standardPBRMatC);
+	sphereEntity.AddMaterial(&standardPBRMatB);
+	sphereEntity.AddMaterial(&standardPBRMatD);
+	sphereEntity.AddMaterial(&standardPBRMatA);
+	sphereEntity.AddMaterial(&standardPBRMatB);
 
 	CreatBaseRenderTarget(windowWidth * 2.0, windowHeight * 2.0);
 	

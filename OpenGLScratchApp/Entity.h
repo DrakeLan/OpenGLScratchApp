@@ -23,11 +23,14 @@ class Entity
 
 		void updateSelfAndChild();
 
+		void AddMaterial(Material* mat);
+		void RemapMeshAndMaterial();
 		void RenderEntity();
 
 	private:
 		void EntityDraw();
 		void EntityTraverse(Entity* theEntity);
+		
 
 };
 

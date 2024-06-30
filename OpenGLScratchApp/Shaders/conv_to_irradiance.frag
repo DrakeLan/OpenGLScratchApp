@@ -20,7 +20,8 @@ void main()
     vec3 right = normalize(cross(up, normal));
     up = normalize(cross(normal, right));
 
-    float sampleDelta = 0.01;
+    //Low sample ratio to improve realtime efficiency, need to improve sample ratio when change to offline work
+    float sampleDelta = 0.001;
     float nrSamples = 0.0; 
     for(float phi = 0.0; phi < 2.0 * PI; phi += sampleDelta)
     {
