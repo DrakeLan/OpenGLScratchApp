@@ -7,6 +7,6 @@ void Scene::AddEntity(Entity* entity)
 
 void Scene::RenderScene(Render* render)
 {
-	render->ExcutePasses();
+	render->ExecutePasses();
 }
 

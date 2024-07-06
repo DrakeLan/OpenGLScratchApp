@@ -1,5 +1,5 @@
 #include "Render.h"
 
-void Render::ExcutePasses()
+void Render::ExecutePasses()
 {
 }

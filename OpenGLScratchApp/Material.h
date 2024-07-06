@@ -4,12 +4,20 @@
 #include "Shader.h"
 #include "Textrue.h"
 
+enum RenderMode
+{
+	opaque,
+	transparent
+};
+
 class Material
 {
 public:
 	Material();
 	Material(GLfloat sIntensity, GLfloat shine);
 	Material(Shader* sourceShader);
+
+	RenderMode renderMode = opaque;
 
 	void SetPropValue(const char* propName, float x = 0.0f, float y = 0.0f, float z = 0.0f, float w = 0.0f);
 	void SetTextureValue(const char* propName, float x = 0.0f);

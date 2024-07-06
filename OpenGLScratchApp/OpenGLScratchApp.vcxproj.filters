@@ -49,9 +49,9 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Transform.cpp" />
     <ClCompile Include="MaterialProperty.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="RenderPass.cpp" />
     <ClCompile Include="Render.cpp" />
+    <ClCompile Include="RenderPass.cpp" />
+    <ClCompile Include="Scene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -102,9 +102,9 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="MaterialProperty.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="RenderPass.h" />
     <ClInclude Include="Render.h" />
+    <ClInclude Include="RenderPass.h" />
+    <ClInclude Include="Scene.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Head Files">
