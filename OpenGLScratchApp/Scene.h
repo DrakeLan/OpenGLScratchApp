@@ -10,7 +10,7 @@ class Scene
 
 
 	private:
-		list<Entity*> sceneEntities;
+		vector<Entity*> sceneEntities;
 
 };
 

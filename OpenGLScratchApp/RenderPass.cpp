@@ -1,15 +1,30 @@
 #include "RenderPass.h"
 
-void RenderPass::ExecuteRenderPass(list<Entity*> Entities)
+void RenderPass::ExecuteRenderPass(vector<Entity*> Entities)
 {
 }
 
-void RenderPass::ExecuteRenderPass(list<Entity*> Entities, RenderMode renderMode)
+void RenderPass::ExecuteRenderPass(vector<Entity*> Entities, RenderMode renderMode)
 {
 }
 
 void RenderPass::ExecuteRenderPass(FilteredRenderData filteredRenderData, RenderMode renderMode)
 {
+}
+
+vector<Mesh*> RenderPass::GetFilteredMesh()
+{
+    return filteredData.filteredMesh;
+}
+
+vector<Material*> RenderPass::GetFilteredMaterial()
+{
+    return filteredData.filteredMaterial;
+}
+
+FilteredRenderData RenderPass::GetFilteredData()
+{
+    return filteredData;
 }
 
 void RenderPass::DrawEntity(Entity* theEntity, RenderMode renderMode)

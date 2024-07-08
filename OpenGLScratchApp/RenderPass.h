@@ -17,11 +17,16 @@ struct FilteredRenderData
 class RenderPass
 {
 	public:
-		void ExecuteRenderPass(list<Entity*> Entities);
-		void ExecuteRenderPass(list<Entity*> Entities, RenderMode renderMode);
+		void ExecuteRenderPass(vector<Entity*> Entities);
+		void ExecuteRenderPass(vector<Entity*> Entities, RenderMode renderMode);
 		void ExecuteRenderPass(FilteredRenderData filteredRenderData, RenderMode renderMode);
 
+		vector<Mesh*> GetFilteredMesh();
+		vector<Material*> GetFilteredMaterial();
+		FilteredRenderData GetFilteredData();
+
 	private:
+		RenderMode renderMode;
 		FilteredRenderData filteredData;
 
 		void DrawEntity(Entity* theEntity, RenderMode rednerMode);
