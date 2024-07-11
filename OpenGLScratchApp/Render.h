@@ -1,14 +1,19 @@
 #pragma once
 #include "RenderPass.h"
 
-class Render
-{
+namespace RenderSystem {
+
+	class Render
+	{
 	public:
+		Render();
 		Render(RenderPass* opaque, RenderPass* transparent);
 		void getEntities(vector<Entity*> renderEntities);
 		void ExecutePasses();
 
-	
+
+		~Render();
+
 	private:
 		list<RenderPass> renderPasses;
 		RenderPass* opaquePass;
@@ -17,5 +22,8 @@ class Render
 		vector<Entity*> entities;
 
 
-};
+	};
+
+}
+
 

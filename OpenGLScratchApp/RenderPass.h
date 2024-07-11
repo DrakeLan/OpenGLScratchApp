@@ -1,29 +1,35 @@
 #pragma once
 #include "Entity.h"
 
-enum RenderOrder
-{
-	FrontToBack,
-	BackToFront
-};
+namespace RenderSystem {
 
-struct FilteredRenderData 
-{
-	RenderOrder sortOrder;
-	vector<Mesh*> filteredMesh;
-	vector<Material*> filteredMaterial;
-};
+	enum RenderOrder
+	{
+		FrontToBack,
+		BackToFront
+	};
 
-class RenderPass
-{
+	struct FilteredRenderData
+	{
+		RenderOrder sortOrder;
+		vector<Mesh*> filteredMesh;
+		vector<Material*> filteredMaterial;
+	};
+
+	class RenderPass
+	{
 	public:
-		void ExecuteRenderPass(vector<Entity*> Entities);
-		void ExecuteRenderPass(vector<Entity*> Entities, RenderMode renderMode);
-		void ExecuteRenderPass(FilteredRenderData filteredRenderData, RenderMode renderMode);
+		RenderPass();
+		RenderPass(RenderMode rMode);
+
+		void ExecuteRenderPass(vector<Entity*> rootEntities);
+		void ExecuteRenderPass(FilteredRenderData filteredRenderData);
 
 		vector<Mesh*> GetFilteredMesh();
 		vector<Material*> GetFilteredMaterial();
 		FilteredRenderData GetFilteredData();
+
+		~RenderPass();
 
 	private:
 		RenderMode renderMode;
@@ -33,8 +39,8 @@ class RenderPass
 		void TraverseEntity(Entity* theEntity, RenderMode renderMode);
 
 		void DrawMeshes(FilteredRenderData filteredRenderData, RenderMode renderMode);
-		 
-};
 
+	};
+}
 
 

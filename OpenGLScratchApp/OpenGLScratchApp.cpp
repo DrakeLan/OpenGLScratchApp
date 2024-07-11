@@ -28,12 +28,22 @@
 #include "RenderTexture.h"
 #include "IBLRender.h"
 #include "Entity.h"
+#include "Scene.h"
 
 // Window dimensions
 const GLuint windowWidth = 1366;
 const GLuint windowHeight = 768;
 
 const float toRadians = 3.14159265f / 180.0f;
+
+using namespace SceneSystem;
+using namespace RenderSystem;
+
+Scene mainScene;
+Render baseRender;
+RenderSystem::RenderPass baseOpaquePass;
+RenderSystem::RenderPass transparentPass;
+
 
 glm::vec3 cameraPos;
 
@@ -736,7 +746,7 @@ void PBRPass()
 
 }
 
-void RenderPass()
+void RenderPassLegacy()
 {
 	shaderList[0].UseShader();
 	//TO DO: Use materials to query uniform varible need to be full in different shader
@@ -967,6 +977,7 @@ int main()
 	standardPBRMatD.SetTextureValue("irradianceMap", irradianceTexture->GetTextureID());
 	standardPBRMatD.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
 	standardPBRMatD.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
+	standardPBRMatD.renderMode = transparent;
 
 
 
@@ -983,6 +994,9 @@ int main()
 	sphereEntity.AddMaterial(&standardPBRMatD);
 	sphereEntity.AddMaterial(&standardPBRMatA);
 	sphereEntity.AddMaterial(&standardPBRMatB);
+
+	mainScene.AddEntity(&sphereEntity);
+	//baseRender = baseRender();
 
 	CreatBaseRenderTarget(windowWidth * 2.0, windowHeight * 2.0);
 	
@@ -1025,13 +1039,13 @@ int main()
 
 		baseRT.BindFBO();
 		baseRT.Write();
-		RenderPass();
+		RenderPassLegacy();
 		//ReflectionObjPass();
 		//TessellationOp(mainWindow.getsKeys());
 		//TessellationObjectPass(tessParam, tessHeight);
 		//PBRPass();
 		//InstancingPass();
-		sphereEntity.RenderEntity();
+		//sphereEntity.RenderEntity();
 
 		PtoWMat = glm::mat4(glm::inverse(camera.calculateOriginalViewMatrix())) * glm::mat4(inversPro);
 		

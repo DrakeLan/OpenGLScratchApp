@@ -1,16 +1,20 @@
 #pragma once
 #include "Render.h"
 
+using namespace RenderSystem;
 
-class Scene
-{
+namespace SceneSystem {
+	class Scene
+	{
 	public:
 		void AddEntity(Entity* entity);
-		void RenderScene(Render* render);
+		void RenderScene(RenderSystem::Render* render);
 
 
 	private:
 		vector<Entity*> sceneEntities;
 
-};
+	};
+}
+
 
