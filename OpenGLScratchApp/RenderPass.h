@@ -12,6 +12,7 @@ namespace RenderSystem {
 	struct FilteredRenderData
 	{
 		RenderOrder sortOrder;
+		vector<glm::mat4> modelTransMat;
 		vector<Mesh*> filteredMesh;
 		vector<Material*> filteredMaterial;
 	};

@@ -41,8 +41,8 @@ using namespace RenderSystem;
 
 Scene mainScene;
 Render baseRender;
-RenderSystem::RenderPass baseOpaquePass;
-RenderSystem::RenderPass transparentPass;
+RenderPass baseOpaquePass;
+RenderPass transparentPass;
 
 
 glm::vec3 cameraPos;
@@ -911,9 +911,6 @@ int main()
 
 	glm::vec4 testColor = glm::vec4(1.0, 1.0, 1.0, 1.0);
 
-
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
 	iblRender = IBLRender(512.0f, 512.0f, 32.0f, 32.0f);
@@ -973,7 +970,7 @@ int main()
 	standardPBRMatD.SetPropValue("metallic", 1.0f);
 	standardPBRMatD.SetPropValue("roughness", 0.0f);
 	standardPBRMatD.SetPropValue("ao", 1.0f);
-	standardPBRMatD.SetPropValue("alpha", 0.2f);
+	standardPBRMatD.SetPropValue("alpha", 1.0f);
 	standardPBRMatD.SetTextureValue("irradianceMap", irradianceTexture->GetTextureID());
 	standardPBRMatD.SetTextureValue("importanceSampleMap", importanceSampleTexture->GetTextureID());
 	standardPBRMatD.SetTextureValue("BRDF_LUT", brdfPreComputeMap->GetTextureID());
@@ -996,7 +993,9 @@ int main()
 	sphereEntity.AddMaterial(&standardPBRMatB);
 
 	mainScene.AddEntity(&sphereEntity);
-	//baseRender = baseRender();
+	baseOpaquePass = RenderPass(opaque);
+	transparentPass = RenderPass(transparent);
+	baseRender = Render(&baseOpaquePass, &transparentPass);
 
 	CreatBaseRenderTarget(windowWidth * 2.0, windowHeight * 2.0);
 	
@@ -1046,6 +1045,7 @@ int main()
 		//PBRPass();
 		//InstancingPass();
 		//sphereEntity.RenderEntity();
+		mainScene.RenderScene(&baseRender);
 
 		PtoWMat = glm::mat4(glm::inverse(camera.calculateOriginalViewMatrix())) * glm::mat4(inversPro);
 		

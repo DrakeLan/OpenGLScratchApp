@@ -8,7 +8,7 @@ namespace SceneSystem {
 	{
 	public:
 		void AddEntity(Entity* entity);
-		void RenderScene(RenderSystem::Render* render);
+		void RenderScene(Render* render);
 
 
 	private:

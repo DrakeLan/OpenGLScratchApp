@@ -21,6 +21,7 @@ namespace RenderSystem {
 	{
 		if ((opaquePass != nullptr) && (transparentPass != nullptr))
 		{
+			//glEnable(GL_DEPTH_TEST);
 			opaquePass->ExecuteRenderPass(entities);
 
 			vector<Mesh*> fMesh = opaquePass->GetFilteredMesh();
@@ -28,7 +29,12 @@ namespace RenderSystem {
 
 			if (fMesh.size() > 0)
 			{
+				glEnable(GL_BLEND);
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				//glDepthMask(GL_FALSE);
 				transparentPass->ExecuteRenderPass(opaquePass->GetFilteredData());
+				glDisable(GL_BLEND);
+				//glDepthMask(GL_TRUE);
 			}
 		}
 

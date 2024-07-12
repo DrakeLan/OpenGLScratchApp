@@ -22,6 +22,7 @@ namespace RenderSystem {
 
     void RenderPass::ExecuteRenderPass(FilteredRenderData filteredRenderData)
     {
+        DrawMeshes(filteredRenderData, renderMode);
     }
 
     vector<Mesh*> RenderPass::GetFilteredMesh()
@@ -65,6 +66,7 @@ namespace RenderSystem {
                 }
                 else
                 {
+                    filteredData.modelTransMat.push_back(theEntity->transform.modelMatrix);
                     filteredData.filteredMesh.push_back(curMesh);
                     filteredData.filteredMaterial.push_back(curMat);
                 }
@@ -115,15 +117,15 @@ namespace RenderSystem {
         {
             for (size_t i = 0; i < filteredRenderData.filteredMaterial.size(); i++)
             {
-                filteredRenderData.filteredMaterial[i]->UseMaterial();
+                filteredRenderData.filteredMaterial[i]->UseMaterial(filteredRenderData.modelTransMat[i]);
                 filteredRenderData.filteredMesh[i]->RenderMesh();
             }
         }
         else
         {
-            for (size_t i = filteredRenderData.filteredMaterial.size(); i >= 0; i--)
+            for (int i = filteredRenderData.filteredMaterial.size() - 1; i >= 0; i--)
             {
-                filteredRenderData.filteredMaterial[i]->UseMaterial();
+                filteredRenderData.filteredMaterial[i]->UseMaterial(filteredRenderData.modelTransMat[i]);
                 filteredRenderData.filteredMesh[i]->RenderMesh();
             }
         }
