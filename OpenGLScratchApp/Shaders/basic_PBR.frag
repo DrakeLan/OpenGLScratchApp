@@ -87,7 +87,8 @@ float GeometrySchlickGGX (float NdotL, float NdotV, float roughness){
 																			
 void main()																	
 {	
-	vec3 albedo = vec3(0.0);
+	//vec3 albedo = vec3(0.004, 0.006, 0.01);
+	vec3 albedo = vec3(1.0);
 	float safeRoughness = max(0.045, roughness);
 
 	//Base vectors

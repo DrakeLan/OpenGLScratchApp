@@ -581,6 +581,61 @@ void TessellationOp(bool* keys)
 	}
 }
 
+void PBROp(bool* keys, float& metallic, float& roughness)
+{
+
+	if (keys[GLFW_KEY_RIGHT])
+	{
+		if (metallic <= 1.0f)
+		{
+			metallic += 0.1;
+			if (metallic > 1.0f)
+			{
+				metallic = 1.0f;
+			}
+		}
+
+	}
+
+	if (keys[GLFW_KEY_LEFT])
+	{
+		if (metallic >= 0.0f)
+		{
+			metallic -= 0.1;
+			if (metallic < 0.0f)
+			{
+				metallic = 0.0f;
+			}
+		}
+	}
+
+	if (keys[GLFW_KEY_UP])
+	{
+		if (roughness <= 1.0f)
+		{
+			roughness += 0.001f;
+			if (roughness > 1.0f)
+			{
+				roughness = 1.0f;
+			}
+		}
+	}
+
+	if (keys[GLFW_KEY_DOWN])
+	{
+		if (roughness >= 0.0f)
+		{
+			roughness -= 0.001f;
+			if (roughness < 0.0f)
+			{
+				roughness = 0.0f;
+			}
+		}
+	}
+
+
+}
+
 void ClearPass()
 {
 	glViewport(0, 0, windowWidth, windowHeight);
@@ -804,8 +859,8 @@ int main()
 	grassTextrue.LoadTextrue();
 	heightTextrue = Textrue((char*)("Textures/teapot_disp.png"));
 	heightTextrue.LoadTextrue();
-	iblRadianceTexture = Textrue((char*)("Textures/table_mountain_1_puresky_4k.hdr"));
-	iblRadianceTexture.LoadTextrueHDR();
+	iblRadianceTexture = Textrue((char*)("Textures/ibl_hdr_radiance.png"));
+	iblRadianceTexture.LoadTextrue();
 	const char* cubeMapPath[6] = { "Textures/posx.jpg", "Textures/negx.jpg", "Textures/posy.jpg", "Textures/negy.jpg", "Textures/posz.jpg", "Textures/negz.jpg" };
 	CubeMap = Textrue(cubeMapPath);
 	CubeMap.LoadCubeMap();
@@ -928,8 +983,8 @@ int main()
 	PlainMaterial = Material(1.0f, 256.0f);
 
 	pbrMaterial = Material(&basicPBRShader);
-	pbrMaterial.SetPropValue("metallic", 0.0f);
-	pbrMaterial.SetPropValue("roughness", 0.2f);
+	pbrMaterial.SetPropValue("metallic", 1.0f);
+	pbrMaterial.SetPropValue("roughness", 1.0f);
 	pbrMaterial.SetPropValue("ao", 1.0f);
 	pbrMaterial.SetPropValue("alpha", 1.0f);
 	pbrMaterial.SetTextureValue("irradianceMap", irradianceTexture->GetTextureID());
@@ -998,6 +1053,10 @@ int main()
 	baseRender = Render(&baseOpaquePass, &transparentPass);
 
 	CreatBaseRenderTarget(windowWidth * 2.0, windowHeight * 2.0);
+
+	float testRoughness = 0.0f;
+	float testMettallic = 0.0f;
+
 	
 	//loop until window close
 	while (!mainWindow.getShouldClose())
@@ -1042,10 +1101,14 @@ int main()
 		//ReflectionObjPass();
 		//TessellationOp(mainWindow.getsKeys());
 		//TessellationObjectPass(tessParam, tessHeight);
-		//PBRPass();
+		PBROp(mainWindow.getsKeys(), testMettallic, testRoughness);
+		pbrMaterial.SetPropValue("metallic", testMettallic);
+		pbrMaterial.SetPropValue("roughness", testRoughness);
+
+		PBRPass();
 		//InstancingPass();
 		//sphereEntity.RenderEntity();
-		mainScene.RenderScene(&baseRender);
+		//mainScene.RenderScene(&baseRender);
 
 		PtoWMat = glm::mat4(glm::inverse(camera.calculateOriginalViewMatrix())) * glm::mat4(inversPro);
 		
