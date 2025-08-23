@@ -11,3 +11,11 @@ It's my personal OpenGL practice project, the feature will keep updating.
 ### CubeMap and Reflection
 
 ![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/CubeMapAndReflection.png)![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/CubeMapAndReflection2.png)
+
+### Tessellation
+
+![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/Tessellation.gif)
+
+### Instancing
+
+![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/Instancing.gif)
