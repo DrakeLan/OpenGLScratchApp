@@ -23,4 +23,8 @@ It's my personal OpenGL practice project, the feature will keep updating.
 ### PBR
 
 ![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/PBR.gif)
+![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/PBR.png)
+![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/PBR2.png)
+![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/PBR4.png)
+![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/PBR5.png)
 
