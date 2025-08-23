@@ -19,3 +19,8 @@ It's my personal OpenGL practice project, the feature will keep updating.
 ### Instancing
 
 ![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/Instancing.gif)
+
+### PBR
+
+![image](https://github.com/DrakeLan/OpenGLScratchApp/blob/master/DemoImage/PBR.gif)
+
